@@ -136,6 +136,9 @@ function stepRate(direction) {
 export function setTimeBarVisible(visible) {
   timeBarVisible = visible;
   dom.timeBar.dataset.ouverte = visible ? 'oui' : 'non';
+  // Les vues immersives placent leurs panneaux au-dessus de la barre de temps :
+  // l'état est porté par le document pour que la mise en page en tienne compte.
+  document.body.dataset.barreTemps = visible ? 'oui' : 'non';
   if (visible) buildTimeBar();
 }
 

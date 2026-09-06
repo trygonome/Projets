@@ -81,6 +81,19 @@
   pointer-events: none;
 }
 
+/* Barre d'outils des vues immersives : une seule ligne qui défile au doigt. */
+.surface-outils--defilante {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.surface-outils--defilante::-webkit-scrollbar { display: none; }
+.surface-outils--defilante > * { flex: 0 0 auto; }
+
 .surface-outils > * { pointer-events: auto; }
 
 .puce-outil {
@@ -105,6 +118,7 @@
   left: 10px;
   right: 10px;
   bottom: calc(var(--hauteur-nav) + env(safe-area-inset-bottom) + 12px);
+  transition: bottom 0.22s ease;
   z-index: 5;
   padding: 11px 13px;
   border-radius: var(--rayon);
@@ -112,6 +126,12 @@
   background: color-mix(in srgb, var(--carte) 92%, transparent);
   backdrop-filter: blur(14px);
   box-shadow: var(--ombre);
+}
+
+/* La barre de temps s'insère entre la navigation et le panneau flottant. */
+body[data-barre-temps='oui'] .info-flottante {
+  bottom: calc(var(--hauteur-nav) + var(--hauteur-barre-temps)
+    + env(safe-area-inset-bottom) + 12px);
 }
 
 .info-flottante-titre {
@@ -266,3 +286,48 @@
 
 .agenda-jour-numero { font-size: 17px; font-weight: 600; line-height: 1; }
 .agenda-jour-mois { font-size: 9.5px; text-transform: uppercase; color: var(--texte-faible); letter-spacing: 0.05em; }
+
+/* ------------------------------------------------------- calque d'étiquettes */
+
+.calque-etiquettes {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.etiquette {
+  position: absolute;
+  transform: translate(10px, -50%);
+  transform-origin: left center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 0;
+  background: color-mix(in srgb, var(--carte) 70%, transparent);
+  color: var(--texte-doux);
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.etiquette[data-cote='gauche'] { transform: translate(calc(-100% - 10px), -50%); }
+
+.etiquette[data-actif='oui'] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--carte));
+}
+
+.surface-indication {
+  position: absolute;
+  top: 48px;
+  left: 14px;
+  right: 14px;
+  z-index: 5;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--texte-faible);
+  pointer-events: none;
+}

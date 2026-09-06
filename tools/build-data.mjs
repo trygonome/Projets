@@ -204,7 +204,7 @@ async function buildDeepSky() {
 /* ----------------------------------------------------------- contours terre */
 
 /** Décodeur TopoJSON minimal : renvoie les arcs en coordonnées lon/lat. */
-function decodeTopology(topology) {
+function decodeArcs(topology) {
   const { scale, translate } = topology.transform;
   return topology.arcs.map((arc) => {
     let x = 0;
@@ -212,24 +212,44 @@ function decodeTopology(topology) {
     return arc.map(([dx, dy]) => {
       x += dx;
       y += dy;
-      return [
-        round(x * scale[0] + translate[0], 2),
-        round(y * scale[1] + translate[1], 2),
-      ];
+      return [x * scale[0] + translate[0], y * scale[1] + translate[1]];
     });
   });
 }
 
+/**
+ * Assemble un anneau de polygone : les indices négatifs désignent un arc
+ * parcouru à l'envers, et le dernier point d'un arc est le premier du suivant.
+ */
+function assembleRing(indices, arcs) {
+  const ring = [];
+  for (const index of indices) {
+    const arc = index < 0 ? [...arcs[-index - 1]].reverse() : arcs[index];
+    ring.push(...(ring.length ? arc.slice(1) : arc));
+  }
+  return ring.map(([lon, lat]) => [round(lon, 2), round(lat, 2)]);
+}
+
 async function buildLand() {
   const topology = await fetchJson(SOURCES.land);
-  const arcs = decodeTopology(topology);
-  // Les rings des polygones sont réutilisés entre géométries ; pour un simple
-  // tracé de côtes, dessiner chaque arc une fois suffit et évite les doublons.
+  const arcs = decodeArcs(topology);
+  const rings = [];
+  for (const geometry of topology.objects.land.geometries) {
+    const polygons = geometry.type === 'Polygon' ? [geometry.arcs] : geometry.arcs;
+    for (const polygon of polygons) {
+      for (const component of polygon) {
+        const ring = assembleRing(component, arcs);
+        if (ring.length > 3) rings.push(ring);
+      }
+    }
+  }
+  rings.sort((a, b) => b.length - a.length);
   await emit('land.json', {
     source: 'Natural Earth 110m (domaine public) via world-atlas',
-    arcs: arcs.filter((arc) => arc.length > 1),
+    projection: 'lon/lat en degrés',
+    rings,
   });
-  return arcs.length;
+  return rings.length;
 }
 
 /* -------------------------------------------------------------------- main */
@@ -239,10 +259,10 @@ async function main() {
   const starCount = await buildStars();
   const constellationCount = await buildConstellations();
   const dsoCount = await buildDeepSky();
-  const arcCount = await buildLand();
+  const ringCount = await buildLand();
   process.stderr.write(
     `\n${starCount} étoiles, ${constellationCount} constellations, ` +
-    `${dsoCount} objets Messier, ${arcCount} arcs de côtes.\n`,
+    `${dsoCount} objets Messier, ${ringCount} contours terrestres.\n`,
   );
 }
 
