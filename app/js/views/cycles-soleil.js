@@ -23,6 +23,7 @@ import {
 import {
   formatTime, formatDate, formatDateTime, formatNumber, formatDegrees, formatDuration,
   formatSignedDuration, formatRelative, formatDMS, cardinalPoint, formatKm, formatAu,
+  formatAzimuth,
 } from '../core/format.js';
 
 const MONTH_TICKS = [
@@ -130,11 +131,11 @@ export function createSolarPanel() {
     ),
     rows(
       row('Lever', day.rise ? formatTime(day.rise, zone) : '—',
-        day.rise ? `azimut ${formatDegrees(bodySnapshot(Body.Sun, day.rise, place).azimuth, 0)} · ${cardinalPoint(bodySnapshot(Body.Sun, day.rise, place).azimuth)}` : null),
+        day.rise ? `azimut ${formatAzimuth(bodySnapshot(Body.Sun, day.rise, place).azimuth)} · ${cardinalPoint(bodySnapshot(Body.Sun, day.rise, place).azimuth)}` : null),
       row('Midi vrai', day.transit ? formatTime(day.transit, zone) : '—',
         day.transitAltitude !== null ? `${formatDegrees(day.transitAltitude, 1)} au-dessus de l’horizon` : null),
       row('Coucher', day.set ? formatTime(day.set, zone) : '—',
-        day.set ? `azimut ${formatDegrees(bodySnapshot(Body.Sun, day.set, place).azimuth, 0)} · ${cardinalPoint(bodySnapshot(Body.Sun, day.set, place).azimuth)}` : null),
+        day.set ? `azimut ${formatAzimuth(bodySnapshot(Body.Sun, day.set, place).azimuth)} · ${cardinalPoint(bodySnapshot(Body.Sun, day.set, place).azimuth)}` : null),
       row('Durée du jour', day.visibleHours === null ? '—' : formatDuration(day.visibleHours)),
       row('Équation du temps',
         `${eot >= 0 ? '+' : '−'}${formatDuration(Math.abs(eot) / 60, { showSeconds: true })}`,

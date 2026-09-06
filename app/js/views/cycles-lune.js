@@ -18,7 +18,7 @@ import { MOON, CYCLES } from '../data/bodies.js';
 import { localDateParts, startOfLocalDay, MS_PER_DAY } from '../core/time.js';
 import {
   formatTime, formatDate, formatDateTime, formatNumber, formatKm, formatDegrees,
-  formatSmallAngle, formatRelative, formatDMS, calendarDay,
+  formatSmallAngle, formatRelative, formatDMS, calendarDay, formatAzimuth, cardinalPoint,
 } from '../core/format.js';
 
 const WEEKDAYS = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
@@ -104,7 +104,7 @@ export function createLunarPanel() {
       row('Diamètre apparent', formatSmallAngle(state.angularDiameter),
         `${formatNumber(state.angularDiameter * 60, { digits: 1 })} minutes d’arc`),
       row('Hauteur', formatDegrees(state.position.altitude, 1),
-        `azimut ${formatDegrees(state.position.azimuth, 0)}`),
+        `azimut ${formatAzimuth(state.position.azimuth)} · ${cardinalPoint(state.position.azimuth)}`),
       row('Constellation', state.position.constellation.name),
     ),
 

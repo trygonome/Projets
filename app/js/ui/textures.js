@@ -102,7 +102,7 @@ function createCanvas(width, height) {
  * polaires optionnelles. La projection est équirectangulaire.
  */
 function rockyTexture({
-  seed, stops, width = 1024, height = 512, craters = 0, iceCaps = 0,
+  seed, stops, width = 512, height = 256, craters = 0, iceCaps = 0,
   contrast = 1, latitudeShading = 0,
 }) {
   const canvas = createCanvas(width, height);
@@ -172,7 +172,7 @@ function rockyTexture({
  * étiré horizontalement simule le cisaillement des vents.
  */
 function bandedTexture({
-  seed, stops, width = 1024, height = 512, turbulence = 0.06, bandCount = 14,
+  seed, stops, width = 512, height = 256, turbulence = 0.06, bandCount = 14,
   spots = [],
 }) {
   const canvas = createCanvas(width, height);
@@ -244,7 +244,7 @@ function unwrapRing(ring) {
  * Terre dessinée à partir des contours réels des côtes (Natural Earth),
  * en projection équirectangulaire, avec biomes bruités et calottes polaires.
  */
-function earthTexture(polygons, { width = 2048, height = 1024 } = {}) {
+function earthTexture(polygons, { width = 1024, height = 512 } = {}) {
   const canvas = createCanvas(width, height);
   const context = canvas.getContext('2d');
 
@@ -337,7 +337,7 @@ function earthTexture(polygons, { width = 2048, height = 1024 } = {}) {
 /* ------------------------------------------------------------- anneaux */
 
 /** Bande radiale des anneaux de Saturne, avec la division de Cassini. */
-function ringTexture({ width = 1024, height = 8 } = {}) {
+function ringTexture({ width = 512, height = 4 } = {}) {
   const canvas = createCanvas(width, height);
   const context = canvas.getContext('2d');
   const image = context.createImageData(width, height);
@@ -380,7 +380,7 @@ function ringTexture({ width = 1024, height = 8 } = {}) {
 /* ---------------------------------------------------------------- Soleil */
 
 /** Granulation photosphérique du Soleil. */
-function sunTexture({ width = 1024, height = 512 } = {}) {
+function sunTexture({ width = 512, height = 256 } = {}) {
   const canvas = createCanvas(width, height);
   const context = canvas.getContext('2d');
   const image = context.createImageData(width, height);
@@ -414,7 +414,7 @@ function sunTexture({ width = 1024, height = 512 } = {}) {
 /** Description de la surface de chaque corps rendu en trois dimensions. */
 const RECIPES = {
   Mercury: () => rockyTexture({
-    seed: 101, craters: 900, contrast: 1.35,
+    seed: 101, craters: 420, contrast: 1.35,
     stops: [[0, [66, 62, 58]], [0.45, [124, 116, 106]], [0.8, [162, 152, 140]], [1, [196, 186, 172]]],
   }),
   Venus: () => rockyTexture({
@@ -422,11 +422,11 @@ const RECIPES = {
     stops: [[0, [186, 148, 84]], [0.5, [224, 190, 126]], [1, [246, 226, 178]]],
   }),
   Mars: () => rockyTexture({
-    seed: 303, craters: 260, contrast: 1.2, iceCaps: 0.1,
+    seed: 303, craters: 130, contrast: 1.2, iceCaps: 0.1,
     stops: [[0, [96, 44, 26]], [0.35, [152, 74, 40]], [0.7, [190, 110, 62]], [1, [214, 152, 104]]],
   }),
   Moon: () => rockyTexture({
-    seed: 404, craters: 1400, contrast: 1.15,
+    seed: 404, craters: 620, contrast: 1.15,
     stops: [[0, [58, 56, 52]], [0.4, [116, 112, 105]], [0.75, [162, 158, 150]], [1, [206, 202, 194]]],
   }),
   Jupiter: () => bandedTexture({
@@ -454,7 +454,7 @@ const RECIPES = {
     }],
   }),
   Pluto: () => rockyTexture({
-    seed: 909, craters: 320, contrast: 1.1,
+    seed: 909, craters: 160, contrast: 1.1,
     stops: [[0, [92, 74, 62]], [0.45, [154, 132, 112]], [0.8, [200, 182, 160]], [1, [232, 220, 202]]],
   }),
   Io: () => rockyTexture({
@@ -466,11 +466,11 @@ const RECIPES = {
     stops: [[0, [176, 158, 138]], [0.5, [216, 204, 188]], [1, [242, 236, 226]]],
   }),
   Ganymede: () => rockyTexture({
-    seed: 333, craters: 500, contrast: 1.1,
+    seed: 333, craters: 240, contrast: 1.1,
     stops: [[0, [86, 76, 68]], [0.5, [142, 130, 118]], [1, [190, 180, 168]]],
   }),
   Callisto: () => rockyTexture({
-    seed: 444, craters: 1200, contrast: 1.2,
+    seed: 444, craters: 560, contrast: 1.2,
     stops: [[0, [58, 50, 44]], [0.5, [108, 96, 86]], [1, [156, 144, 130]]],
   }),
   Titan: () => rockyTexture({

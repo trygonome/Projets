@@ -16,7 +16,7 @@ import {
 import { startOfLocalDay, startOfNextLocalDay, addLocalDays, addHours } from '../core/time.js';
 import {
   formatTime, formatDuration, formatSignedDuration, formatDegrees, formatDMS,
-  formatNumber, formatSmallAngle, cardinalPoint, formatKm, formatRelative,
+  formatNumber, formatSmallAngle, cardinalPoint, formatKm, formatRelative, formatAzimuth,
   calendarDay, formatDate, formatLatitude, formatLongitude,
 } from '../core/format.js';
 
@@ -109,7 +109,7 @@ export function mount(container) {
     },
     statGrid(
       stat('Hauteur', formatDegrees(snapshot.altitude, 1), { tone: 'accent' }),
-      stat('Azimut', formatDegrees(snapshot.azimuth, 0), { hint: cardinalPoint(snapshot.azimuth) }),
+      stat('Azimut', formatAzimuth(snapshot.azimuth), { hint: cardinalPoint(snapshot.azimuth) }),
       stat('Durée du jour',
         sun.visibleHours === null ? '—' : formatDuration(sun.visibleHours),
         { hint: variation === null ? null : `${formatSignedDuration(variation)} depuis hier` }),
@@ -125,11 +125,11 @@ export function mount(container) {
 
     rows(
       row('Lever', timeOrDash(sun.rise, zone),
-        sun.rise ? `azimut ${formatDegrees(bodySnapshot(Body.Sun, sun.rise, place).azimuth, 0)} · ${cardinalPoint(bodySnapshot(Body.Sun, sun.rise, place).azimuth)}` : null),
+        sun.rise ? `azimut ${formatAzimuth(bodySnapshot(Body.Sun, sun.rise, place).azimuth)} · ${cardinalPoint(bodySnapshot(Body.Sun, sun.rise, place).azimuth)}` : null),
       row('Midi solaire vrai', timeOrDash(sun.transit, zone),
         sun.transitAltitude !== null ? `hauteur maximale ${formatDegrees(sun.transitAltitude, 1)}` : null),
       row('Coucher', timeOrDash(sun.set, zone),
-        sun.set ? `azimut ${formatDegrees(bodySnapshot(Body.Sun, sun.set, place).azimuth, 0)} · ${cardinalPoint(bodySnapshot(Body.Sun, sun.set, place).azimuth)}` : null),
+        sun.set ? `azimut ${formatAzimuth(bodySnapshot(Body.Sun, sun.set, place).azimuth)} · ${cardinalPoint(bodySnapshot(Body.Sun, sun.set, place).azimuth)}` : null),
     ),
 
     disclosure('Crépuscules, heure dorée et heure bleue',
@@ -201,7 +201,7 @@ export function mount(container) {
           row('Âge', `${formatNumber(state.age, { digits: 1 })} j`, `sur ${formatNumber(29.53, { digits: 2 })} j de lunaison`),
           row('Prochaine phase', nextQuarter.name, formatRelative(nextQuarter.date, date)),
           row('Distance', formatKm(state.distanceKm), `${formatSmallAngle(state.angularDiameter)} de diamètre`),
-          row('Hauteur', formatDegrees(snapshot.altitude, 1), `azimut ${formatDegrees(snapshot.azimuth, 0)} · ${cardinalPoint(snapshot.azimuth)}`),
+          row('Hauteur', formatDegrees(snapshot.altitude, 1), `azimut ${formatAzimuth(snapshot.azimuth)} · ${cardinalPoint(snapshot.azimuth)}`),
         ))),
 
     above ? el('p', { class: 'figure-legende' },

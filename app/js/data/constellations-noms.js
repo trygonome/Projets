@@ -11,12 +11,12 @@ export const CONSTELLATION_NAMES = {
     "Andromedae"
   ],
   "Ant": [
-    "Machine Pneumatique",
+    "Machine Pneumatique",
     "Antlia",
     "Antliae"
   ],
   "Aps": [
-    "Oiseau de Paradis",
+    "Oiseau de Paradis",
     "Apus",
     "Apodis"
   ],
@@ -66,18 +66,18 @@ export const CONSTELLATION_NAMES = {
     "Cancri"
   ],
   "CVn": [
-    "Chiens de Chasse",
-    "Canes Venatici",
+    "Chiens de Chasse",
+    "Canes Venatici",
     "Canum Venaticorum"
   ],
   "CMa": [
-    "Grand Chien",
-    "Canis Maior",
+    "Grand Chien",
+    "Canis Maior",
     "Canis Majoris"
   ],
   "CMi": [
-    "Petit Chien",
-    "Canis Minor",
+    "Petit Chien",
+    "Canis Minor",
     "Canis Minoris"
   ],
   "Cap": [
@@ -126,18 +126,18 @@ export const CONSTELLATION_NAMES = {
     "Columbae"
   ],
   "Com": [
-    "Chevelure de Bérénice",
-    "Coma Berenices",
+    "Chevelure de Bérénice",
+    "Coma Berenices",
     "Comae Berenices"
   ],
   "CrA": [
-    "Couronne Australe",
-    "Corona Australis",
+    "Couronne Australe",
+    "Corona Australis",
     "Coronae Austrini"
   ],
   "CrB": [
-    "Couronne Boréale",
-    "Corona Borealis",
+    "Couronne Boréale",
+    "Corona Borealis",
     "Coronae Borealis"
   ],
   "Crv": [
@@ -151,7 +151,7 @@ export const CONSTELLATION_NAMES = {
     "Crateris"
   ],
   "Cru": [
-    "Croix du Sud",
+    "Croix du Sud",
     "Crux",
     "Crux"
   ],
@@ -176,7 +176,7 @@ export const CONSTELLATION_NAMES = {
     "Draconis"
   ],
   "Equ": [
-    "Petit Cheval",
+    "Petit Cheval",
     "Equuleus",
     "Equulei"
   ],
@@ -211,12 +211,12 @@ export const CONSTELLATION_NAMES = {
     "Horologii"
   ],
   "Hya": [
-    "Hydre Femelle",
+    "Hydre Femelle",
     "Hydra",
     "Hydrae"
   ],
   "Hyi": [
-    "Hydre Mâle",
+    "Hydre Mâle",
     "Hydrus",
     "Hydri"
   ],
@@ -236,8 +236,8 @@ export const CONSTELLATION_NAMES = {
     "Leonis"
   ],
   "LMi": [
-    "Petit Lion",
-    "Leo Minor",
+    "Petit Lion",
+    "Leo Minor",
     "Leonis Minoris"
   ],
   "Lep": [
@@ -336,8 +336,8 @@ export const CONSTELLATION_NAMES = {
     "Piscium"
   ],
   "PsA": [
-    "Poisson Austral",
-    "Piscis Austrinus",
+    "Poisson Austral",
+    "Piscis Austrinus",
     "Piscis Austrini"
   ],
   "Pup": [
@@ -376,7 +376,7 @@ export const CONSTELLATION_NAMES = {
     "Sculptoris"
   ],
   "Sct": [
-    "Écu de Sobieski",
+    "Écu de Sobieski",
     "Scutum",
     "Scuti"
   ],
@@ -406,8 +406,8 @@ export const CONSTELLATION_NAMES = {
     "Trianguli"
   ],
   "TrA": [
-    "Triangle Austral",
-    "Triangulum Australe",
+    "Triangle Austral",
+    "Triangulum Australe",
     "Trianguli Australis"
   ],
   "Tuc": [
@@ -416,13 +416,13 @@ export const CONSTELLATION_NAMES = {
     "Tucanae"
   ],
   "UMa": [
-    "Grande Ourse",
-    "Ursa Maior",
+    "Grande Ourse",
+    "Ursa Maior",
     "Ursae Majoris"
   ],
   "UMi": [
-    "Petite Ourse",
-    "Ursa Minor",
+    "Petite Ourse",
+    "Ursa Minor",
     "Ursae Minoris"
   ],
   "Vel": [
@@ -436,12 +436,12 @@ export const CONSTELLATION_NAMES = {
     "Virginis"
   ],
   "Vol": [
-    "Poisson Volant",
+    "Poisson Volant",
     "Volans",
     "Volantis"
   ],
   "Vul": [
-    "Petit Renard",
+    "Petit Renard",
     "Vulpecula",
     "Vulpeculae"
   ]

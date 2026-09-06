@@ -6,6 +6,11 @@
  * les périodes en jours, les températures en degrés Celsius.
  *
  * Une période de rotation négative signale une rotation rétrograde.
+ *
+ * Les éléments orbitaux sont les éléments osculateurs J2000 du JPL, et non les
+ * « distances moyennes » des fiches grand public : eux seuls sont cohérents
+ * entre eux et vérifient la troisième loi de Kepler, ce que les tests
+ * contrôlent.
  */
 
 /** Rayons équatoriaux utilisés pour les diamètres apparents. */
@@ -71,10 +76,10 @@ export const PLANETS = [
       rotationPeriod: 58.646, solarDay: 175.94, obliquity: 0.034,
     },
     orbit: {
-      semiMajorAxisAu: 0.387098, semiMajorAxisKm: 57.909e6,
-      eccentricity: 0.205630, inclination: 7.005,
+      semiMajorAxisAu: 0.387099, semiMajorAxisKm: 57.909e6,
+      eccentricity: 0.205636, inclination: 7.0050,
       period: 87.969, synodicPeriod: 115.88, orbitalSpeed: 47.36,
-      perihelionAu: 0.307499, aphelionAu: 0.466697,
+      perihelionAu: 0.307499, aphelionAu: 0.466699,
     },
     atmosphere: { pressure: 5e-15, composition: [['Oxygène', 42], ['Sodium', 29], ['Hydrogène', 22], ['Hélium', 6]] },
     moons: 0,
@@ -101,10 +106,10 @@ export const PLANETS = [
       rotationPeriod: -243.025, solarDay: 116.75, obliquity: 177.36,
     },
     orbit: {
-      semiMajorAxisAu: 0.723332, semiMajorAxisKm: 108.209e6,
-      eccentricity: 0.006773, inclination: 3.3947,
+      semiMajorAxisAu: 0.723336, semiMajorAxisKm: 108.209e6,
+      eccentricity: 0.006777, inclination: 3.3947,
       period: 224.701, synodicPeriod: 583.92, orbitalSpeed: 35.02,
-      perihelionAu: 0.718440, aphelionAu: 0.728213,
+      perihelionAu: 0.718435, aphelionAu: 0.728236,
     },
     atmosphere: { pressure: 92, composition: [['Dioxyde de carbone', 96.5], ['Azote', 3.5]] },
     moons: 0,
@@ -132,9 +137,9 @@ export const PLANETS = [
     },
     orbit: {
       semiMajorAxisAu: 1.000003, semiMajorAxisKm: 149.598e6,
-      eccentricity: 0.016710, inclination: 0.0,
+      eccentricity: 0.016711, inclination: 0.0,
       period: 365.256, synodicPeriod: null, orbitalSpeed: 29.78,
-      perihelionAu: 0.983290, aphelionAu: 1.016710,
+      perihelionAu: 0.983290, aphelionAu: 1.016716,
     },
     atmosphere: {
       pressure: 1.014,
@@ -164,10 +169,10 @@ export const PLANETS = [
       rotationPeriod: 1.025957, solarDay: 1.027491, obliquity: 25.19,
     },
     orbit: {
-      semiMajorAxisAu: 1.523679, semiMajorAxisKm: 227.956e6,
-      eccentricity: 0.093412, inclination: 1.8506,
-      period: 686.980, synodicPeriod: 779.94, orbitalSpeed: 24.07,
-      perihelionAu: 1.381497, aphelionAu: 1.665861,
+      semiMajorAxisAu: 1.523710, semiMajorAxisKm: 227.939e6,
+      eccentricity: 0.093394, inclination: 1.8497,
+      period: 686.980, synodicPeriod: 779.94, orbitalSpeed: 24.08,
+      perihelionAu: 1.381457, aphelionAu: 1.665963,
     },
     atmosphere: {
       pressure: 0.00636,
@@ -197,10 +202,10 @@ export const PLANETS = [
       rotationPeriod: 0.413538, solarDay: 0.413541, obliquity: 3.13,
     },
     orbit: {
-      semiMajorAxisAu: 5.204267, semiMajorAxisKm: 778.479e6,
-      eccentricity: 0.048393, inclination: 1.3053,
+      semiMajorAxisAu: 5.202887, semiMajorAxisKm: 778.340e6,
+      eccentricity: 0.048386, inclination: 1.3044,
       period: 4332.589, synodicPeriod: 398.88, orbitalSpeed: 13.06,
-      perihelionAu: 4.950429, aphelionAu: 5.458104,
+      perihelionAu: 4.951158, aphelionAu: 5.454616,
     },
     atmosphere: { pressure: null, composition: [['Hydrogène', 89.8], ['Hélium', 10.2], ['Méthane', 0.3]] },
     moons: 97,
@@ -227,10 +232,10 @@ export const PLANETS = [
       rotationPeriod: 0.439583, solarDay: 0.439599, obliquity: 26.73,
     },
     orbit: {
-      semiMajorAxisAu: 9.582017, semiMajorAxisKm: 1433.529e6,
-      eccentricity: 0.055723, inclination: 2.4845,
-      period: 10759.22, synodicPeriod: 378.09, orbitalSpeed: 9.68,
-      perihelionAu: 9.041231, aphelionAu: 10.122803,
+      semiMajorAxisAu: 9.536676, semiMajorAxisKm: 1426.666e6,
+      eccentricity: 0.053862, inclination: 2.4860,
+      period: 10759.22, synodicPeriod: 378.09, orbitalSpeed: 9.64,
+      perihelionAu: 9.023054, aphelionAu: 10.050298,
     },
     atmosphere: { pressure: null, composition: [['Hydrogène', 96.3], ['Hélium', 3.25], ['Méthane', 0.45]] },
     moons: 274,
@@ -257,10 +262,10 @@ export const PLANETS = [
       rotationPeriod: -0.718333, solarDay: 0.718331, obliquity: 97.77,
     },
     orbit: {
-      semiMajorAxisAu: 19.218446, semiMajorAxisKm: 2872.463e6,
-      eccentricity: 0.046381, inclination: 0.7733,
-      period: 30688.5, synodicPeriod: 369.66, orbitalSpeed: 6.80,
-      perihelionAu: 18.326705, aphelionAu: 20.110187,
+      semiMajorAxisAu: 19.189165, semiMajorAxisKm: 2870.658e6,
+      eccentricity: 0.047257, inclination: 0.7726,
+      period: 30685.4, synodicPeriod: 369.66, orbitalSpeed: 6.80,
+      perihelionAu: 18.282334, aphelionAu: 20.095996,
     },
     atmosphere: { pressure: null, composition: [['Hydrogène', 82.5], ['Hélium', 15.2], ['Méthane', 2.3]] },
     moons: 28,
@@ -287,10 +292,10 @@ export const PLANETS = [
       rotationPeriod: 0.671250, solarDay: 0.671254, obliquity: 28.32,
     },
     orbit: {
-      semiMajorAxisAu: 30.110387, semiMajorAxisKm: 4495.060e6,
-      eccentricity: 0.008678, inclination: 1.7700,
-      period: 60195, synodicPeriod: 367.49, orbitalSpeed: 5.43,
-      perihelionAu: 29.849101, aphelionAu: 30.371674,
+      semiMajorAxisAu: 30.069923, semiMajorAxisKm: 4498.396e6,
+      eccentricity: 0.008590, inclination: 1.7700,
+      period: 60189.0, synodicPeriod: 367.49, orbitalSpeed: 5.43,
+      perihelionAu: 29.811622, aphelionAu: 30.328224,
     },
     atmosphere: { pressure: null, composition: [['Hydrogène', 80], ['Hélium', 19], ['Méthane', 1.5]] },
     moons: 16,
@@ -332,7 +337,7 @@ export const DWARF_PLANETS = [
     ],
   },
   {
-    id: 'Ceres', name: 'Cérès', symbol: '⚳', kind: 'planète naine (ceinture principale)',
+    id: 'Ceres', name: 'Cérès', symbol: '', kind: 'planète naine (ceinture principale)',
     color: '#a39b91',
     physical: { radius: 469.7, mass: 9.383e20, density: 2162, gravity: 0.28, escapeVelocity: 0.51, albedo: 0.09, temperatureMean: -105, rotationPeriod: 0.3781, obliquity: 4 },
     orbit: { semiMajorAxisAu: 2.7658, semiMajorAxisKm: 413.7e6, eccentricity: 0.0785, inclination: 10.59, period: 1681.6, orbitalSpeed: 17.9, perihelionAu: 2.5484, aphelionAu: 2.9832 },
@@ -345,7 +350,7 @@ export const DWARF_PLANETS = [
     ],
   },
   {
-    id: 'Eris', name: 'Éris', symbol: '⯰', kind: 'planète naine (disque des objets épars)',
+    id: 'Eris', name: 'Éris', symbol: '', kind: 'planète naine (disque des objets épars)',
     color: '#d6d6d6',
     physical: { radius: 1163, mass: 1.638e22, density: 2430, gravity: 0.82, escapeVelocity: 1.38, albedo: 0.96, temperatureMean: -231, rotationPeriod: 15.786 },
     orbit: { semiMajorAxisAu: 67.864, semiMajorAxisKm: 10152e6, eccentricity: 0.4361, inclination: 44.04, period: 203830, orbitalSpeed: 3.43, perihelionAu: 38.271, aphelionAu: 97.457 },
@@ -358,7 +363,7 @@ export const DWARF_PLANETS = [
     ],
   },
   {
-    id: 'Haumea', name: 'Hauméa', symbol: '🝻', kind: 'planète naine (ceinture de Kuiper)',
+    id: 'Haumea', name: 'Hauméa', symbol: '', kind: 'planète naine (ceinture de Kuiper)',
     color: '#e0dcd0',
     physical: { radius: 816, mass: 4.006e21, density: 1885, gravity: 0.401, escapeVelocity: 0.91, albedo: 0.51, temperatureMean: -241, rotationPeriod: 0.163146 },
     orbit: { semiMajorAxisAu: 43.116, semiMajorAxisKm: 6449e6, eccentricity: 0.1912, inclination: 28.21, period: 103660, orbitalSpeed: 4.53, perihelionAu: 34.867, aphelionAu: 51.365 },
@@ -370,9 +375,9 @@ export const DWARF_PLANETS = [
     ],
   },
   {
-    id: 'Makemake', name: 'Makémaké', symbol: '🝼', kind: 'planète naine (ceinture de Kuiper)',
+    id: 'Makemake', name: 'Makémaké', symbol: '', kind: 'planète naine (ceinture de Kuiper)',
     color: '#d9b7a0',
-    physical: { radius: 715, mass: 3.1e21, density: 1700, gravity: 0.4, escapeVelocity: 0.8, albedo: 0.81, temperatureMean: -239, rotationPeriod: 0.9511 },
+    physical: { radius: 715, mass: 3.1e21, density: 2020, gravity: 0.41, escapeVelocity: 0.76, albedo: 0.81, temperatureMean: -239, rotationPeriod: 0.9511 },
     orbit: { semiMajorAxisAu: 45.430, semiMajorAxisKm: 6796e6, eccentricity: 0.1610, inclination: 28.98, period: 111845, orbitalSpeed: 4.42, perihelionAu: 38.116, aphelionAu: 52.744 },
     moons: 1,
     discovery: 'Michael Brown et son équipe, 31 mars 2005',

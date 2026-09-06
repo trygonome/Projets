@@ -157,17 +157,33 @@ export function mount(container, { setTimeBarVisible, navigate }) {
 
   const objects = new Map();
 
+  /**
+   * Générations de textures reportées. Chacune coûte quelques dizaines de
+   * millisecondes ; les enchaîner toutes avant le premier rendu ferait attendre
+   * plusieurs secondes devant un écran noir.
+   */
+  const pendingTextures = [];
+
   function buildBody(entry) {
     const data = PLANET_DATA.find((p) => p.id === entry.id)
       ?? { id: entry.id, name: bodyName(entry.body), color: '#c8b6a6', physical: { radius: BODY_RADIUS_KM[entry.id], obliquity: 0 } };
 
     const group = new THREE.Group();
-    const texture = new THREE.CanvasTexture(bodyCanvas(entry.id, { landPolygons: landData }));
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 48, 32),
-      new THREE.MeshStandardMaterial({ map: texture, roughness: 0.92, metalness: 0 }),
-    );
+    // La scène doit apparaître tout de suite : chaque corps naît avec sa teinte
+    // moyenne, et sa surface lui est appliquée ensuite, un corps par image.
+    const material = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(data.color), roughness: 0.92, metalness: 0,
+    });
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), material);
+    pendingTextures.push(() => {
+      const texture = new THREE.CanvasTexture(
+        bodyCanvas(entry.id, { landPolygons: landData }),
+      );
+      texture.colorSpace = THREE.SRGBColorSpace;
+      material.map = texture;
+      material.color.set(0xffffff);
+      material.needsUpdate = true;
+    });
     // L'aplatissement des géantes est visible : on l'applique à la sphère.
     const polar = data.physical.polarRadius ?? data.physical.radius;
     mesh.scale.set(1, polar / data.physical.radius, 1);
@@ -256,12 +272,15 @@ export function mount(container, { setTimeBarVisible, navigate }) {
   }
 
   function makeMoonMesh(id) {
-    const texture = new THREE.CanvasTexture(bodyCanvas(id));
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 24, 16),
-      new THREE.MeshStandardMaterial({ map: texture, roughness: 0.95 }),
-    );
+    const material = new THREE.MeshStandardMaterial({ color: 0xbfb8ac, roughness: 0.95 });
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), material);
+    pendingTextures.push(() => {
+      const texture = new THREE.CanvasTexture(bodyCanvas(id));
+      texture.colorSpace = THREE.SRGBColorSpace;
+      material.map = texture;
+      material.color.set(0xffffff);
+      material.needsUpdate = true;
+    });
     // Un halo discret garde la lune repérable même réduite à quelques pixels.
     const halo = new THREE.Sprite(new THREE.SpriteMaterial({
       map: new THREE.CanvasTexture(glowCanvas('220,220,235', 128)),
@@ -633,6 +652,10 @@ export function mount(container, { setTimeBarVisible, navigate }) {
   function frame() {
     if (stopped) return;
     animation = requestAnimationFrame(frame);
+
+    // Une surface par image : la scène reste fluide pendant qu'elle s'habille.
+    if (pendingTextures.length) pendingTextures.shift()();
+
     const date = now();
     const scale = SCALES[scaleKey];
 

@@ -9,14 +9,17 @@
 import * as Astronomy from '../../vendor/astronomy.js';
 import { el } from '../ui/dom.js';
 import { loadCatalogue, greatCircle, equatorialVector, DEG } from '../core/catalogue.js';
-import { now, observer, timeZone, display, setDisplay } from '../core/state.js';
+import { now, observer, display, setDisplay } from '../core/state.js';
 import {
   Body, TRACKED_BODIES, bodyName, bodySnapshot, astroObserver, moonLimbOrientation,
 } from '../core/ephem.js';
 import {
   formatDegrees, formatNumber, formatSmallAngle, cardinalPoint, formatDistance,
-  formatHMS, formatDMS, formatTime,
+  formatHMS, formatDMS, formatAzimuth,
 } from '../core/format.js';
+import {
+  orientationAvailable, requestOrientationPermission, watchOrientation,
+} from '../core/boussole.js';
 
 const PLANET_COLORS = {
   Sun: '#ffd27d', Moon: '#e8e2d4', Mercury: '#b9aca2', Venus: '#f6e2b4',
@@ -32,8 +35,9 @@ const CARDINALS = [
 export function mount(container, { setTimeBarVisible, navigate }) {
   const canvas = el('canvas', { class: 'surface' });
   const tools = el('div', { class: 'surface-outils surface-outils--defilante' });
+  const hint = el('p', { class: 'surface-indication', hidden: true });
   const info = el('div', { class: 'info-flottante', hidden: true });
-  container.append(canvas, tools, info);
+  container.append(canvas, tools, hint, info);
   setTimeBarVisible(true);
 
   const context = canvas.getContext('2d');
@@ -55,6 +59,9 @@ export function mount(container, { setTimeBarVisible, navigate }) {
   let catalogue = null;
   let selected = null;
   let projected = [];
+
+  /** Suivi de l'orientation de l'appareil, quand l'utilisateur l'active. */
+  const compass = { active: false, stop: null, absolute: true, message: '' };
 
   /* ------------------------------------------------------------ projection */
 
@@ -151,7 +158,6 @@ export function mount(container, { setTimeBarVisible, navigate }) {
   function draw() {
     const date = now();
     const place = observer();
-    const zone = timeZone();
     const obs = astroObserver(place);
     const time = new Astronomy.AstroTime(date);
     const rotation = Astronomy.Rotation_EQJ_HOR(time, obs);
@@ -173,20 +179,19 @@ export function mount(container, { setTimeBarVisible, navigate }) {
     context.fillStyle = `rgb(${background.join(',')})`;
     context.fillRect(0, 0, width, height);
 
-    drawHorizonGlow(sun, toHorizontal, background);
+    drawHorizonGlow(sun, background);
     if (options.grid) drawGrid();
     drawEquatorAndEcliptic(toHorizontal);
     if (options.constellations) drawConstellations(toHorizontal, limit);
-    drawStars(toHorizontal, limit, sun.altitude);
+    drawStars(toHorizontal, limit);
     if (options.deepSky) drawDeepSky(toHorizontal, limit);
     drawBodies(date, place, toHorizontal);
     drawHorizon();
     drawLabels();
-    void zone;
   }
 
   /** Lueur du ciel dans la direction du Soleil, au crépuscule. */
-  function drawHorizonGlow(sun, toHorizontal, background) {
+  function drawHorizonGlow(sun, background) {
     if (sun.altitude < -14 || sun.altitude > 8) return;
     const point = project(horizontalVector(sun.azimuth, Math.max(sun.altitude, -6)));
     if (!point) return;
@@ -198,7 +203,6 @@ export function mount(container, { setTimeBarVisible, navigate }) {
     gradient.addColorStop(1, `rgba(${background.join(',')},0)`);
     context.fillStyle = gradient;
     context.fillRect(0, 0, width, height);
-    void toHorizontal;
   }
 
   const horizontalVector = (azimuth, altitude) => {
@@ -265,7 +269,7 @@ export function mount(container, { setTimeBarVisible, navigate }) {
     }
   }
 
-  function drawStars(toHorizontal, limit, sunAltitude) {
+  function drawStars(toHorizontal, limit) {
     const zoom = Math.min(2.4, (60 / view.fov) ** 0.34);
     for (const star of catalogue.stars) {
       if (star.mag > limit) break; // le catalogue est trié par éclat
@@ -305,7 +309,6 @@ export function mount(container, { setTimeBarVisible, navigate }) {
           'rgba(214,228,255,0.78)', 11, point[0]);
       }
     }
-    void sunAltitude;
   }
 
   function drawDeepSky(toHorizontal, limit) {
@@ -522,6 +525,8 @@ export function mount(container, { setTimeBarVisible, navigate }) {
     previous.y = event.clientY;
 
     if (pointers.size === 1) {
+      // Toucher la carte reprend la main : on ne se bat pas avec le capteur.
+      if (compass.active) stopCompass();
       // Le glissement déplace la visée d'un angle proportionnel au champ.
       const perPixel = view.fov / Math.min(width, height);
       view.azimuth = (view.azimuth - dx * perPixel * 0.9 + 360) % 360;
@@ -596,7 +601,7 @@ export function mount(container, { setTimeBarVisible, navigate }) {
     selected = entry.body;
     const snapshot = entry.snapshot;
     const details = [
-      `Hauteur ${formatDegrees(snapshot.altitude, 1)} · azimut ${formatDegrees(snapshot.azimuth, 0)} (${cardinalPoint(snapshot.azimuth)})`,
+      `Hauteur ${formatDegrees(snapshot.altitude, 1)} · azimut ${formatAzimuth(snapshot.azimuth)} (${cardinalPoint(snapshot.azimuth)})`,
       `AD ${formatHMS(snapshot.ra)} · Déc ${formatDMS(snapshot.dec, { sign: true })}`,
       snapshot.magnitude !== null ? `Magnitude ${formatNumber(snapshot.magnitude, { digits: 1 })}` : null,
       snapshot.angularDiameter ? `Diamètre apparent ${formatSmallAngle(snapshot.angularDiameter)}` : null,
@@ -639,11 +644,55 @@ export function mount(container, { setTimeBarVisible, navigate }) {
       el('div', { class: 'info-flottante-detail' }, [
         star.proper && star.designation ? star.designation : null,
         `Magnitude ${formatNumber(star.mag, { digits: 2 })}`,
-        `Hauteur ${formatDegrees(altitude, 1)} · azimut ${formatDegrees(azimuth, 0)} (${cardinalPoint(azimuth)})`,
+        `Hauteur ${formatDegrees(altitude, 1)} · azimut ${formatAzimuth(azimuth)} (${cardinalPoint(azimuth)})`,
         `AD ${formatHMS(star.ra)} · Déc ${formatDMS(star.dec, { sign: true })}`,
         `Constellation ${constellation.symbol}`,
       ].filter(Boolean).join(' · ')),
     );
+  }
+
+  /* ---------------------------------------------------------- boussole */
+
+  async function startCompass() {
+    if (!orientationAvailable()) {
+      compass.message = 'Cet appareil ne fournit pas son orientation.';
+      renderTools();
+      return;
+    }
+    if (!await requestOrientationPermission()) {
+      compass.message = 'Accès aux capteurs refusé.';
+      renderTools();
+      return;
+    }
+
+    compass.active = true;
+    compass.message = '';
+    // Un champ resserré donne l'impression d'une fenêtre ouverte sur le ciel.
+    view.fov = Math.min(view.fov, 75);
+
+    let recu = false;
+    compass.stop = watchOrientation((aim, absolute) => {
+      recu = true;
+      compass.absolute = absolute;
+      view.azimuth = aim.azimuth;
+      view.altitude = Math.max(-88, Math.min(89.9, aim.altitude));
+    });
+
+    // Certains appareils déclarent l'API sans jamais émettre de mesure.
+    setTimeout(() => {
+      if (compass.active && !recu) {
+        compass.message = 'Aucune mesure reçue du capteur.';
+        stopCompass();
+      }
+    }, 2500);
+    renderTools();
+  }
+
+  function stopCompass() {
+    compass.stop?.();
+    compass.stop = null;
+    compass.active = false;
+    renderTools();
   }
 
   /* ------------------------------------------------------------- outils */
@@ -658,11 +707,22 @@ export function mount(container, { setTimeBarVisible, navigate }) {
 
   function renderTools() {
     tools.replaceChildren(
+      orientationAvailable()
+        ? el('button', {
+          class: 'puce-outil', type: 'button',
+          'data-actif': compass.active ? 'oui' : 'non',
+          onClick: () => (compass.active ? stopCompass() : startCompass()),
+          title: 'Diriger la carte en pointant le téléphone vers le ciel',
+        }, compass.active ? '⌖ Boussole active' : '⌖ Boussole')
+        : null,
       ...VIEWS.map((preset) => el('button', {
         class: 'puce-outil', type: 'button',
-        onClick: () => Object.assign(view, {
-          azimuth: preset.azimuth, altitude: preset.altitude, fov: preset.fov,
-        }),
+        onClick: () => {
+          if (compass.active) stopCompass();
+          Object.assign(view, {
+            azimuth: preset.azimuth, altitude: preset.altitude, fov: preset.fov,
+          });
+        },
       }, preset.label)),
       ...[
         ['constellations', 'Figures'],
@@ -682,6 +742,14 @@ export function mount(container, { setTimeBarVisible, navigate }) {
         },
       }, label)),
     );
+
+    hint.textContent = compass.message
+      || (compass.active
+        ? (compass.absolute
+          ? 'Pointez le téléphone vers le ciel. Touchez la carte pour reprendre la main.'
+          : 'Orientation non calibrée sur le nord : dessinez un 8 avec le téléphone.')
+        : '');
+    hint.hidden = !hint.textContent;
   }
 
   /* ---------------------------------------------------------- cycle de vie */
@@ -722,6 +790,7 @@ export function mount(container, { setTimeBarVisible, navigate }) {
       stopped = true;
       cancelAnimationFrame(animation);
       resizeObserver.disconnect();
+      compass.stop?.();
       setTimeBarVisible(false);
     },
   };

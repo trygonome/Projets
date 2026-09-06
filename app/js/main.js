@@ -264,12 +264,18 @@ tick();
 
 /* --------------------------------------------------- installation hors-ligne */
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch((error) => {
-      console.warn('Service worker non enregistré', error);
-    });
+function registerServiceWorker() {
+  navigator.serviceWorker.register('sw.js').catch((error) => {
+    console.warn('Service worker non enregistré', error);
   });
+}
+
+if ('serviceWorker' in navigator) {
+  // Ce module comporte un `await` de premier niveau : le chargement de la
+  // page peut être terminé avant qu'on arrive ici, auquel cas l'événement
+  // « load » ne se déclenchera plus jamais.
+  if (document.readyState === 'complete') registerServiceWorker();
+  else window.addEventListener('load', registerServiceWorker, { once: true });
 }
 
 /** Conserve l'événement d'installation pour le proposer depuis les réglages. */

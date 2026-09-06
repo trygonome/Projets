@@ -352,3 +352,35 @@ body[data-barre-temps='oui'] .info-flottante {
   display: block;
   border-radius: 50%;
 }
+
+/* Tableau de repères : deux colonnes étroites, la dernière portant le texte. */
+.tableau--reperes thead { display: none; }
+
+.tableau--reperes td {
+  white-space: normal;
+  vertical-align: top;
+  padding: 8px 12px 8px 0;
+  line-height: 1.45;
+}
+
+.tableau--reperes td:first-child {
+  color: var(--texte);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tableau--reperes td:nth-child(2) {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tableau--reperes td:last-child { color: var(--texte-doux); }
+
+.article code.formule { white-space: pre-wrap; }
+
+.symbole-astre {
+  margin-right: 8px;
+  color: var(--accent);
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Apple Symbols', serif;
+}

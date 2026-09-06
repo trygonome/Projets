@@ -151,12 +151,20 @@ export function formatSmallAngle(degrees) {
   if (!Number.isFinite(degrees)) return '—';
   const arcsec = degrees * 3600;
   if (Math.abs(arcsec) < 60) return `${formatNumber(arcsec, { digits: 1 })}″`;
-  if (Math.abs(degrees) < 1) return `${formatNumber(arcsec / 60, { digits: 2 })}′`;
+  if (Math.abs(degrees) < 1) return `${formatNumber(arcsec / 60, { digits: 1 })}′`;
   return `${formatNumber(degrees, { digits: 2 })}°`;
 }
 
 export function formatDegrees(degrees, digits = 1) {
   return Number.isFinite(degrees) ? `${formatNumber(degrees, { digits })}°` : '—';
+}
+
+/** Azimut arrondi puis ramené dans [0°, 360[ : 359,7° s'affiche 0°, non 360°. */
+export function formatAzimuth(azimuth, digits = 0) {
+  if (!Number.isFinite(azimuth)) return '—';
+  const factor = 10 ** digits;
+  const rounded = Math.round(normalize360(azimuth) * factor) / factor;
+  return `${formatNumber(rounded % 360, { digits })}°`;
 }
 
 const CARDINALS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',

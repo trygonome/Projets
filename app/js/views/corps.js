@@ -24,6 +24,7 @@ import {
   formatTime, formatDateTime, formatNumber, formatScientific, formatDegrees,
   formatSmallAngle, formatKm, formatAu, formatDistance, formatLightTime,
   formatPeriod, formatDuration, formatHMS, formatDMS, cardinalPoint, formatRelative,
+  formatAzimuth,
 } from '../core/format.js';
 
 /** Corps dont l'éphéméride sait calculer une position. */
@@ -94,7 +95,7 @@ export function mount(container, { navigate, params }) {
       el('div', { class: 'grille-corps' }, ...DWARF_PLANETS.map(tile)),
       heading('Lunes remarquables', 'Les mondes qui gravitent autour des planètes'),
       renderMoonIndex(),
-      renderComparison(place, date),
+      renderComparison(),
     );
   }
 
@@ -142,7 +143,7 @@ export function mount(container, { navigate, params }) {
   }
 
   /** Comparaison visuelle des tailles, ramenées au rayon terrestre. */
-  function renderComparison(place, date) {
+  function renderComparison() {
     const earth = PLANETS.find((planet) => planet.id === 'Earth');
     const bodies = [...PLANETS, MOON, ...DWARF_PLANETS.slice(0, 1)];
     const maximum = Math.max(...bodies.map((entry) => entry.physical.radius));
@@ -159,8 +160,7 @@ export function mount(container, { navigate, params }) {
             tone: entry.id === 'Earth' ? 'accent' : 'azur',
           })),
         el('span', { class: 'ligne-valeur' },
-          `× ${formatNumber(entry.physical.radius / earth.physical.radius, { digits: 2 })}`)))),
-    void place, void date);
+          `× ${formatNumber(entry.physical.radius / earth.physical.radius, { digits: 2 })}`)))));
   }
 
   /* -------------------------------------------------------------- fiche */
@@ -182,7 +182,7 @@ export function mount(container, { navigate, params }) {
       renderHeader(data, id),
     ];
 
-    if (hasEphemeris && !isEarth) parts.push(renderPosition(id, data, date, place, zone));
+    if (hasEphemeris && !isEarth) parts.push(renderPosition(id, date, place, zone));
     if (isMoon) parts.push(renderMoonExtra(date, place));
     if (hasEphemeris && !isEarth && !isSun && !isMoon) {
       parts.push(heading('Rendez-vous à venir'), renderAspects(id, date, zone));
@@ -202,14 +202,16 @@ export function mount(container, { navigate, params }) {
       el('div', { class: 'fiche-entete' },
         el('span', { class: 'fiche-globe-hote' }, globe(id, 76)),
         el('div', {},
-          el('div', { class: 'fiche-titre' }, `${data.symbol ?? ''} ${data.name}`.trim()),
+          el('div', { class: 'fiche-titre' },
+            data.symbol ? el('span', { class: 'symbole-astre' }, data.symbol) : null,
+            data.name),
           el('div', { class: 'fiche-genre' }, data.kind),
           data.discovery && data.discovery !== '—'
             ? el('div', { class: 'fiche-genre' }, `Découverte : ${data.discovery}`)
             : null)));
   }
 
-  function renderPosition(id, data, date, place, zone) {
+  function renderPosition(id, date, place, zone) {
     const snapshot = bodySnapshot(id, date, place);
     const circumstances = dailyCircumstances(id, date, place, zone);
     const sun = bodySnapshot(Body.Sun, date, place);
@@ -224,7 +226,7 @@ export function mount(container, { navigate, params }) {
     },
     statGrid(
       stat('Hauteur', formatDegrees(snapshot.altitude, 1), { tone: 'accent' }),
-      stat('Azimut', formatDegrees(snapshot.azimuth, 0), { hint: cardinalPoint(snapshot.azimuth) }),
+      stat('Azimut', formatAzimuth(snapshot.azimuth), { hint: cardinalPoint(snapshot.azimuth) }),
       snapshot.magnitude !== null
         ? stat('Magnitude', formatNumber(snapshot.magnitude, { digits: 1 }))
         : stat('Constellation', snapshot.constellation.symbol),
@@ -232,7 +234,9 @@ export function mount(container, { navigate, params }) {
     rows(
       row('Ascension droite', formatHMS(snapshot.ra, { digits: 1 })),
       row('Déclinaison', formatDMS(snapshot.dec, { sign: true, digits: 1 })),
-      row('Constellation', snapshot.constellation.name, snapshot.constellation.latin),
+      row('Constellation', snapshot.constellation.name,
+        snapshot.constellation.latin === snapshot.constellation.name
+          ? null : snapshot.constellation.latin),
       row('Distance à la Terre', formatDistance(snapshot.distanceKm),
         `la lumière met ${formatLightTime(snapshot.distanceKm)}`),
       snapshot.helioDistanceAu !== null
@@ -266,8 +270,7 @@ export function mount(container, { navigate, params }) {
           row('Coucher', circumstances.set ? formatTime(circumstances.set, zone) : '—'),
           row('Temps au-dessus de l’horizon',
             circumstances.visibleHours === null ? '—' : formatDuration(circumstances.visibleHours)),
-        ),
-    void data);
+        ));
   }
 
   function renderMoonExtra(date, place) {

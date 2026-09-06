@@ -7,10 +7,12 @@
   "license": "MIT",
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node --test tests/",
+    "test": "node --test tests/*.test.mjs",
     "build:data": "node tools/build-data.mjs",
     "build:icons": "node tools/build-icons.mjs",
-    "check": "node tools/verifier.mjs"
+    "build:sw": "node tools/build-sw.mjs",
+    "check": "node tools/verifier.mjs",
+    "parcours": "node tools/parcours.mjs"
   },
   "devDependencies": {
     "playwright": "^1.49.1"

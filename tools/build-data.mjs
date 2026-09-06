@@ -113,11 +113,18 @@ async function buildConstellations() {
   const byId = new Map();
   for (const feature of meta.features) {
     const p = feature.properties;
+    // Le catalogue source glisse des espaces typographiques inhabituels dans
+    // les noms — cadratins, espaces insécables — qui rendent les comparaisons
+    // de chaînes trompeuses. On les ramène tous à l'espace ordinaire.
+    const clean = (text) => (text ?? '')
+      .replace(/[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
     byId.set(feature.id, {
       id: feature.id,
-      latin: p.la || p.name,
-      fr: p.fr || p.name,
-      genitive: p.gen || '',
+      latin: clean(p.la || p.name),
+      fr: clean(p.fr || p.name),
+      genitive: clean(p.gen),
       ra: round(normalizeRa(feature.geometry.coordinates[0]), 3),
       dec: round(feature.geometry.coordinates[1], 3),
       lines: [],

@@ -149,11 +149,24 @@ export const PLACES = RAW.map(([name, region, latitude, longitude, height, timeZ
   label: region && region !== name ? `${name}, ${region}` : name,
 }));
 
-/** Retire accents et casse pour une recherche tolérante. */
+/**
+ * Lettres qui ne se décomposent pas en Unicode : la normalisation NFD sépare
+ * « é » en « e » et un accent, mais laisse « ø » ou « æ » intacts. Sans cette
+ * table, chercher « tromso » ne trouverait jamais Tromsø.
+ */
+const LETTRES_SPECIALES = {
+  ø: 'o', Ø: 'o', æ: 'ae', Æ: 'ae', œ: 'oe', Œ: 'oe', ß: 'ss',
+  đ: 'd', Đ: 'd', ð: 'd', Ð: 'd', þ: 'th', Þ: 'th', ł: 'l', Ł: 'l',
+  ı: 'i', İ: 'i', ħ: 'h', ŋ: 'n', ẞ: 'ss',
+};
+
+/** Retire accents, ligatures et casse pour une recherche tolérante. */
 export const foldText = (text) => text
+  .replace(/[øØæÆœŒßđĐðÐþÞłŁıİħŋẞ]/g, (lettre) => LETTRES_SPECIALES[lettre])
   .normalize('NFD')
-  .replace(/[̀-ͯ]/g, '')
-  .replace(/[’']/g, ' ')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[’'-]/g, ' ')
+  .replace(/\s+/g, ' ')
   .toLowerCase()
   .trim();
 
