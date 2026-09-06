@@ -188,8 +188,10 @@ async function applyRoute() {
   const route = routeById(id);
 
   if (current?.id === id) {
-    current.handle?.setParams?.(params);
-    current.handle?.update?.();
+    // Les vues à paramètres se redessinent depuis `setParams` : appeler aussi
+    // `update` les ferait travailler deux fois pour rien.
+    if (current.handle?.setParams) current.handle.setParams(params);
+    else current.handle?.update?.();
     return;
   }
 

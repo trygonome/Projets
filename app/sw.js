@@ -8,7 +8,7 @@
  *
  * Fichier produit par tools/build-sw.mjs — ne pas modifier à la main.
  */
-const VERSION = '626806a08489';
+const VERSION = '959f01bd7483';
 const CACHE = `celeste-${VERSION}`;
 
 /** 45 fichiers, 1.94 Mo au total. */
