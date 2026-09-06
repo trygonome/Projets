@@ -221,13 +221,37 @@ function bandedTexture({
 /* ------------------------------------------------------------------ Terre */
 
 /**
- * Terre dessinée à partir des contours réels des côtes (Natural Earth),
- * en projection équirectangulaire, avec relief bruité et calottes polaires.
+ * Déroule les longitudes d'un anneau pour qu'il reste continu.
+ *
+ * Un contour qui franchit l'antiméridien saute de +180° à −180° : tracé tel
+ * quel sur une carte plate, il barre le globe d'un trait et son remplissage
+ * inonde les océans. En accumulant les écarts, l'anneau devient continu,
+ * quitte à sortir de l'intervalle habituel — on le redessine alors décalé.
  */
-function earthTexture(rings, { width = 2048, height = 1024 } = {}) {
+function unwrapRing(ring) {
+  const out = [ring[0]];
+  let offset = 0;
+  for (let i = 1; i < ring.length; i += 1) {
+    const delta = ring[i][0] - ring[i - 1][0];
+    if (delta > 180) offset -= 360;
+    else if (delta < -180) offset += 360;
+    out.push([ring[i][0] + offset, ring[i][1]]);
+  }
+  return out;
+}
+
+/**
+ * Terre dessinée à partir des contours réels des côtes (Natural Earth),
+ * en projection équirectangulaire, avec biomes bruités et calottes polaires.
+ */
+function earthTexture(polygons, { width = 2048, height = 1024 } = {}) {
   const canvas = createCanvas(width, height);
   const context = canvas.getContext('2d');
 
+  const toX = (lon) => ((lon + 180) / 360) * width;
+  const toY = (lat) => ((90 - lat) / 180) * height;
+
+  // Fond océanique.
   const ocean = context.createLinearGradient(0, 0, 0, height);
   ocean.addColorStop(0, '#0d2a4a');
   ocean.addColorStop(0.3, '#123f6d');
@@ -237,24 +261,31 @@ function earthTexture(rings, { width = 2048, height = 1024 } = {}) {
   context.fillStyle = ocean;
   context.fillRect(0, 0, width, height);
 
-  const toX = (lon) => ((lon + 180) / 360) * width;
-  const toY = (lat) => ((90 - lat) / 180) * height;
-
-  context.fillStyle = '#3f6b3a';
-  for (const ring of rings) {
-    context.beginPath();
-    ring.forEach(([lon, lat], index) => {
-      const x = toX(lon);
-      const y = toY(lat);
-      if (index === 0) context.moveTo(x, y);
-      else context.lineTo(x, y);
-    });
-    context.closePath();
-    context.fill();
+  // Les terres sont peintes sur un calque transparent : c'est ce qui permet
+  // ensuite d'y appliquer les biomes sans recouvrir l'océan.
+  const land = createCanvas(width, height);
+  const landContext = land.getContext('2d');
+  landContext.fillStyle = '#3f6b3a';
+  const unwrapped = polygons.map((rings) => rings.map(unwrapRing));
+  // Trois passes décalées : un contour déroulé peut déborder de part et d'autre.
+  for (const shift of [-360, 0, 360]) {
+    for (const rings of unwrapped) {
+      landContext.beginPath();
+      for (const ring of rings) {
+        ring.forEach(([lon, lat], index) => {
+          const x = toX(lon + shift);
+          const y = toY(lat);
+          if (index === 0) landContext.moveTo(x, y);
+          else landContext.lineTo(x, y);
+        });
+        landContext.closePath();
+      }
+      // Règle pair-impair : les anneaux intérieurs restent des mers.
+      landContext.fill('evenodd');
+    }
   }
 
-  // Variation de biome : déserts chauds, forêts, toundra, appliquée seulement
-  // sur les terres grâce au mode de composition « source-atop ».
+  // Biomes : déserts chauds, forêts tempérées, toundra.
   const octaves = makeOctaves(20260906, 6, 5);
   const biome = createCanvas(width / 2, height / 2);
   const biomeContext = biome.getContext('2d');
@@ -265,37 +296,40 @@ function earthTexture(rings, { width = 2048, height = 1024 } = {}) {
     for (let x = 0; x < biome.width; x += 1) {
       const u = x / biome.width;
       const noise = fbm(octaves, u, v);
+      // L'aridité culmine sous les tropiques, le froid gagne vers les pôles.
       const arid = Math.exp(-((Math.abs(latitude) - 24) ** 2) / 220);
       const cold = Math.max(0, (Math.abs(latitude) - 52) / 38);
       const color = ramp([
-        [0.0, [58, 92, 46]],
-        [0.4, [78, 106, 52]],
-        [0.7, [116, 118, 66]],
-        [1.0, [150, 138, 92]],
-      ], noise * 0.6 + arid * 0.55 + cold * 0.1);
+        [0.0, [52, 88, 44]],
+        [0.4, [76, 106, 52]],
+        [0.7, [124, 122, 68]],
+        [1.0, [168, 150, 100]],
+      ], noise * 0.55 + arid * 0.6 + cold * 0.12);
       const index = (y * biome.width + x) * 4;
       image.data[index] = color[0];
       image.data[index + 1] = color[1];
       image.data[index + 2] = color[2];
-      image.data[index + 3] = 235;
+      image.data[index + 3] = 240;
     }
   }
   biomeContext.putImageData(image, 0, 0);
-  context.globalCompositeOperation = 'source-atop';
-  context.drawImage(biome, 0, 0, width, height);
-  context.globalCompositeOperation = 'source-over';
+  landContext.globalCompositeOperation = 'source-atop';
+  landContext.drawImage(biome, 0, 0, width, height);
+  landContext.globalCompositeOperation = 'source-over';
 
-  // Calottes polaires, tracées par-dessus terres et océans.
+  context.drawImage(land, 0, 0);
+
+  // Calottes polaires, par-dessus terres et océans.
   const cap = (fromLat, toLat) => {
     const gradient = context.createLinearGradient(0, toY(fromLat), 0, toY(toLat));
     gradient.addColorStop(0, 'rgba(255,255,255,0)');
-    gradient.addColorStop(1, 'rgba(248,251,255,0.96)');
+    gradient.addColorStop(1, 'rgba(248,251,255,0.95)');
     context.fillStyle = gradient;
     context.fillRect(0, Math.min(toY(fromLat), toY(toLat)), width,
       Math.abs(toY(toLat) - toY(fromLat)));
   };
-  cap(72, 90);
-  cap(-64, -90);
+  cap(70, 90);
+  cap(-62, -90);
 
   return canvas;
 }
@@ -451,19 +485,23 @@ const cache = new Map();
  * Canevas de la surface d'un corps. Le résultat est mémorisé : la génération
  * ne coûte qu'une fois par corps et par session.
  */
-export function bodyCanvas(id, { landRings = null } = {}) {
+export function bodyCanvas(id, { landPolygons = null } = {}) {
   if (cache.has(id)) return cache.get(id);
   let canvas;
-  if (id === 'Earth' && landRings) canvas = earthTexture(landRings);
+  let provisional = false;
+  if (id === 'Earth' && landPolygons?.length) canvas = earthTexture(landPolygons);
   else if (id === 'Sun') canvas = sunTexture();
   else if (RECIPES[id]) canvas = RECIPES[id]();
   else {
+    // La Terre sans ses contours n'est qu'un repli en attendant le chargement
+    // des données : il ne faut surtout pas le mémoriser.
+    provisional = id === 'Earth';
     canvas = rockyTexture({
       seed: 1234, contrast: 1,
       stops: [[0, [80, 80, 84]], [0.5, [140, 140, 146]], [1, [196, 196, 202]]],
     });
   }
-  cache.set(id, canvas);
+  if (!provisional) cache.set(id, canvas);
   return canvas;
 }
 
@@ -492,3 +530,66 @@ export function glowCanvas(color = '255,210,125', size = 256) {
 }
 
 export { makeRandom };
+
+/* ------------------------------------------------------------- globes 2D */
+
+/**
+ * Rend un corps en globe éclairé, à partir de sa texture équirectangulaire.
+ *
+ * Pour chaque pixel du disque, on remonte au point de la sphère, on en déduit
+ * longitude et latitude, on y prélève la couleur, puis on applique un éclairage
+ * lambertien. Le résultat est une vignette qui montre la surface réelle du
+ * corps plutôt qu'une pastille de couleur.
+ */
+export function bodyGlobe(id, {
+  size = 128, rotation = 0, lightAngle = -0.6, landPolygons = null, ambient = 0.10,
+} = {}) {
+  const source = bodyCanvas(id, { landPolygons });
+  const sourceContext = source.getContext('2d', { willReadFrequently: true });
+  const texture = sourceContext.getImageData(0, 0, source.width, source.height).data;
+
+  const canvas = createCanvas(size, size);
+  const context = canvas.getContext('2d');
+  const image = context.createImageData(size, size);
+  const radius = size / 2 - 1;
+  const centre = size / 2;
+
+  // Direction de la lumière, dans le repère du globe vu de face.
+  const light = [Math.sin(lightAngle), 0.25, Math.cos(lightAngle)];
+  const lightLength = Math.hypot(...light);
+
+  for (let py = 0; py < size; py += 1) {
+    for (let px = 0; px < size; px += 1) {
+      const x = (px + 0.5 - centre) / radius;
+      const y = (py + 0.5 - centre) / radius;
+      const squared = x * x + y * y;
+      const index = (py * size + px) * 4;
+      if (squared > 1) { image.data[index + 3] = 0; continue; }
+
+      const z = Math.sqrt(1 - squared);
+      // Latitude depuis l'ordonnée, longitude depuis l'abscisse et la profondeur.
+      const latitude = Math.asin(-y);
+      const longitude = Math.atan2(x, z) + rotation;
+
+      const u = ((longitude / (Math.PI * 2) + 0.5) % 1 + 1) % 1;
+      const v = 0.5 - latitude / Math.PI;
+      const sx = Math.min(source.width - 1, Math.max(0, Math.floor(u * source.width)));
+      const sy = Math.min(source.height - 1, Math.max(0, Math.floor(v * source.height)));
+      const offset = (sy * source.width + sx) * 4;
+
+      const lambert = Math.max(0,
+        (x * light[0] + -y * light[1] + z * light[2]) / lightLength);
+      const shade = ambient + (1 - ambient) * lambert;
+      // Léger assombrissement du limbe, qui donne son volume au disque.
+      const limb = 0.72 + 0.28 * z ** 0.4;
+
+      image.data[index] = texture[offset] * shade * limb;
+      image.data[index + 1] = texture[offset + 1] * shade * limb;
+      image.data[index + 2] = texture[offset + 2] * shade * limb;
+      image.data[index + 3] = 255;
+    }
+  }
+
+  context.putImageData(image, 0, 0);
+  return canvas;
+}

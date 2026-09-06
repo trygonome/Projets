@@ -52,6 +52,18 @@ export function svg(tag, props = {}, ...children) {
   return node;
 }
 
+/**
+ * Remplace le contenu d'un élément en ignorant les enfants absents.
+ *
+ * `replaceChildren` du DOM convertit `null` en la chaîne « null » : ce passage
+ * par le même filtrage que `el()` évite ce piège dans les rendus conditionnels.
+ */
+export function replaceContent(node, ...children) {
+  clear(node);
+  appendChildren(node, children);
+  return node;
+}
+
 export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
   return node;

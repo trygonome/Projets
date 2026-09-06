@@ -162,7 +162,7 @@ export function mount(container, { setTimeBarVisible, navigate }) {
       ?? { id: entry.id, name: bodyName(entry.body), color: '#c8b6a6', physical: { radius: BODY_RADIUS_KM[entry.id], obliquity: 0 } };
 
     const group = new THREE.Group();
-    const texture = new THREE.CanvasTexture(bodyCanvas(entry.id, { landRings: landData }));
+    const texture = new THREE.CanvasTexture(bodyCanvas(entry.id, { landPolygons: landData }));
     texture.colorSpace = THREE.SRGBColorSpace;
     const mesh = new THREE.Mesh(
       new THREE.SphereGeometry(1, 48, 32),
@@ -761,7 +761,7 @@ export function mount(container, { setTimeBarVisible, navigate }) {
 
   (async () => {
     try {
-      landData = (await (await fetch('data/land.json')).json()).rings;
+      landData = (await (await fetch('data/land.json')).json()).polygons;
     } catch {
       landData = null;
     }

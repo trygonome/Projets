@@ -242,23 +242,27 @@ function assembleRing(indices, arcs) {
 async function buildLand() {
   const topology = await fetchJson(SOURCES.land);
   const arcs = decodeArcs(topology);
-  const rings = [];
+  // Un polygone est une liste d'anneaux : le premier délimite la terre, les
+  // suivants sont des trous (mers intérieures). Les conserver groupés permet de
+  // les rendre avec la règle « pair-impair » et de ne pas combler les trous.
+  const polygons = [];
   for (const geometry of topology.objects.land.geometries) {
-    const polygons = geometry.type === 'Polygon' ? [geometry.arcs] : geometry.arcs;
-    for (const polygon of polygons) {
-      for (const component of polygon) {
-        const ring = assembleRing(component, arcs);
-        if (ring.length > 3) rings.push(ring);
-      }
+    const shapes = geometry.type === 'Polygon' ? [geometry.arcs] : geometry.arcs;
+    for (const shape of shapes) {
+      const rings = shape
+        .map((component) => assembleRing(component, arcs))
+        .filter((ring) => ring.length > 3);
+      if (rings.length) polygons.push(rings);
     }
   }
-  rings.sort((a, b) => b.length - a.length);
+  polygons.sort((a, b) => b[0].length - a[0].length);
   await emit('land.json', {
     source: 'Natural Earth 110m (domaine public) via world-atlas',
     projection: 'lon/lat en degrés',
-    rings,
+    note: 'Chaque polygone est une liste d’anneaux : contour puis trous.',
+    polygons,
   });
-  return rings.length;
+  return polygons.length;
 }
 
 /* -------------------------------------------------------------------- main */
@@ -271,7 +275,7 @@ async function main() {
   const ringCount = await buildLand();
   process.stderr.write(
     `\n${starCount} étoiles, ${constellationCount} constellations, ` +
-    `${dsoCount} objets Messier, ${ringCount} contours terrestres.\n`,
+    `${dsoCount} objets Messier, ${ringCount} polygones terrestres.\n`,
   );
 }
 

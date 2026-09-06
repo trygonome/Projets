@@ -337,3 +337,18 @@ body[data-barre-temps='oui'] .info-flottante {
   flex-direction: column;
   gap: 14px;
 }
+
+.vignette-globe-hote,
+.fiche-globe-hote {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.vignette-globe-hote canvas,
+.fiche-globe-hote canvas {
+  display: block;
+  border-radius: 50%;
+}
