@@ -331,3 +331,9 @@ body[data-barre-temps='oui'] .info-flottante {
   color: var(--texte-faible);
   pointer-events: none;
 }
+
+.panneau-cycles {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
