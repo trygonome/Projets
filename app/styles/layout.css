@@ -1,0 +1,271 @@
+/*
+ * Charpente de l'écran : en-tête fixe, zone de vue défilante, barre d'onglets
+ * basse. La disposition est pensée pour le pouce sur un téléphone tenu d'une
+ * main, et respecte les encoches et barres système d'Android.
+ */
+
+#application {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ------------------------------------------------------------- en-tête */
+
+.entete {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(env(safe-area-inset-top) + 8px) var(--marge) 8px;
+  background: color-mix(in srgb, var(--fond) 82%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--trait);
+}
+
+.entete-lieu {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 4px 6px;
+  background: none;
+  border: 0;
+  border-radius: var(--rayon-petit);
+  text-align: left;
+  cursor: pointer;
+}
+
+.entete-lieu:active { background: var(--carte-haute); }
+
+.entete-lieu-nom {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.entete-lieu-detail {
+  font-size: 11px;
+  color: var(--texte-faible);
+}
+
+.entete-horloge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  padding: 4px 6px;
+  background: none;
+  border: 0;
+  border-radius: var(--rayon-petit);
+  cursor: pointer;
+}
+
+.entete-horloge:active { background: var(--carte-haute); }
+
+.entete-heure {
+  font-family: var(--police-chiffres);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.entete-date {
+  font-size: 11px;
+  color: var(--texte-faible);
+  white-space: nowrap;
+}
+
+/* Signale que l'horloge n'est plus à l'heure réelle. */
+.entete-horloge[data-simule='oui'] .entete-heure { color: var(--accent); }
+.entete-horloge[data-simule='oui']::after {
+  content: 'temps simulé';
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.bouton-icone {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  border-radius: 50%;
+  color: var(--texte-doux);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.bouton-icone:active { background: var(--carte-haute); color: var(--texte); }
+
+/* --------------------------------------------------------------- vues */
+
+.vue {
+  flex: 1;
+  padding: var(--marge);
+  padding-bottom: calc(var(--hauteur-nav) + env(safe-area-inset-bottom) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Les vues en plein écran (ciel, système) gèrent elles-mêmes leur surface. */
+.vue--pleine {
+  padding: 0;
+  max-width: none;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------- barre d'onglets */
+
+.navigation {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: color-mix(in srgb, var(--fond) 88%, transparent);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--trait);
+}
+
+.onglet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: var(--hauteur-nav);
+  padding: 0 2px;
+  background: none;
+  border: 0;
+  color: var(--texte-faible);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.onglet-glyphe { font-size: 19px; line-height: 1; }
+.onglet-nom { font-size: 10px; letter-spacing: 0.01em; }
+
+.onglet[aria-current='page'] { color: var(--accent); }
+.onglet[aria-current='page'] .onglet-glyphe {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent));
+}
+
+/* ------------------------------------------------------------- panneaux */
+
+.panneau-fond {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(3, 5, 10, 0.72);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.panneau-fond[data-ouvert='oui'] { opacity: 1; }
+
+.panneau {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 51;
+  max-height: 88dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--carte);
+  border-top: 1px solid var(--trait-fort);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--ombre);
+  transform: translateY(100%);
+  transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.panneau[data-ouvert='oui'] { transform: translateY(0); }
+
+.panneau-poignee {
+  width: 40px;
+  height: 4px;
+  margin: 10px auto 4px;
+  border-radius: 2px;
+  background: var(--trait-fort);
+}
+
+.panneau-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px var(--marge) 10px;
+  border-bottom: 1px solid var(--trait);
+}
+
+.panneau-tete h2 { font-size: 16px; }
+
+.panneau-corps {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--marge);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--marge));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* --------------------------------------------------- barre de temps */
+
+.barre-temps {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--hauteur-nav) + env(safe-area-inset-bottom));
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px var(--marge);
+  background: color-mix(in srgb, var(--carte) 92%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--trait);
+  transform: translateY(110%);
+  transition: transform 0.22s ease;
+}
+
+.barre-temps[data-ouverte='oui'] { transform: translateY(0); }
+
+.barre-temps-vitesse {
+  flex: 1;
+  font-family: var(--police-chiffres);
+  font-size: 12px;
+  color: var(--texte-doux);
+  text-align: center;
+}
+
+@media (min-width: 760px) {
+  .vue { padding: 22px; padding-bottom: calc(var(--hauteur-nav) + 40px); }
+  .panneau { left: 50%; right: auto; width: 520px; transform: translate(-50%, 100%); border-radius: 20px; bottom: 24px; }
+  .panneau[data-ouvert='oui'] { transform: translate(-50%, 0); }
+}

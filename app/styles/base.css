@@ -1,0 +1,139 @@
+/*
+ * Fondations : palette, typographie, réinitialisation.
+ *
+ * L'application s'utilise surtout de nuit, souvent dehors : le fond est très
+ * sombre, les contrastes sont élevés et un thème « vision nocturne » remplace
+ * les blancs par du rouge profond pour préserver l'accoutumance à l'obscurité.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --fond: #05070e;
+  --fond-voute: #0a0f1d;
+  --carte: #0e1424;
+  --carte-haute: #151d31;
+  --trait: rgba(148, 168, 214, 0.14);
+  --trait-fort: rgba(148, 168, 214, 0.28);
+
+  --texte: #e9edf7;
+  --texte-doux: #9aa6c0;
+  --texte-faible: #6b7794;
+
+  --accent: #ffd27d;
+  --accent-sourd: rgba(255, 210, 125, 0.16);
+  --azur: #6fd4ff;
+  --azur-sourd: rgba(111, 212, 255, 0.14);
+  --chaud: #ff9a6b;
+  --froid: #7aa7ff;
+  --vif: #7ee0a8;
+  --alerte: #ff7a8a;
+
+  --rayon: 16px;
+  --rayon-petit: 10px;
+  --marge: 16px;
+  --ombre: 0 10px 30px rgba(0, 0, 0, 0.45);
+
+  --police: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
+  --police-chiffres: ui-monospace, 'SF Mono', 'Roboto Mono', Menlo, monospace;
+
+  --hauteur-entete: 60px;
+  --hauteur-nav: 62px;
+}
+
+/* Thème « vision nocturne » : tout passe au rouge, l'œil reste adapté au noir. */
+:root[data-theme='rouge'] {
+  --fond: #060102;
+  --fond-voute: #0d0203;
+  --carte: #150406;
+  --carte-haute: #1e0709;
+  --trait: rgba(255, 90, 90, 0.18);
+  --trait-fort: rgba(255, 90, 90, 0.34);
+  --texte: #ff9d9d;
+  --texte-doux: #c96b6b;
+  --texte-faible: #8f4747;
+  --accent: #ff6b6b;
+  --accent-sourd: rgba(255, 107, 107, 0.16);
+  --azur: #ff8f8f;
+  --azur-sourd: rgba(255, 143, 143, 0.14);
+  --chaud: #ff7a5a;
+  --froid: #e08080;
+  --vif: #ff8c8c;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Voile stellaire discret derrière l'interface. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 800px at 15% -10%, rgba(60, 90, 180, 0.22), transparent 60%),
+    radial-gradient(900px 700px at 100% 10%, rgba(150, 80, 200, 0.14), transparent 60%),
+    radial-gradient(700px 600px at 50% 110%, rgba(30, 120, 160, 0.14), transparent 60%),
+    var(--fond-voute);
+}
+
+:root[data-theme='rouge'] body::before {
+  background:
+    radial-gradient(1000px 700px at 20% -10%, rgba(120, 20, 20, 0.28), transparent 60%),
+    var(--fond-voute);
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+p { margin: 0 0 0.7em; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--azur); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Les chiffres qui changent au fil des secondes ne doivent pas faire vibrer la
+   mise en page : chasse fixe et alignement tabulaire. */
+.chiffres, .stat-valeur, .ligne-valeur, .tableau td {
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb {
+  background: var(--trait-fort);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Céleste — système solaire et éphémérides",
+  "short_name": "Céleste",
+  "description": "Système solaire en trois dimensions, planétarium local, cycles du Soleil et de la Lune, éclipses et agenda céleste. Tout est calculé sur l'appareil et fonctionne hors-ligne.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05070e",
+  "theme_color": "#05070e",
+  "categories": ["education", "utilities", "navigation"],
+  "icons": [
+    { "src": "icons/icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Le ciel maintenant", "url": "./index.html#/ciel", "description": "Planétarium local" },
+    { "name": "Système solaire", "url": "./index.html#/systeme", "description": "Vue tridimensionnelle" },
+    { "name": "Agenda céleste", "url": "./index.html#/agenda", "description": "Prochains événements" }
+  ]
+}

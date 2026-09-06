@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr" data-theme="nuit">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+  <title>Céleste — système solaire et éphémérides</title>
+  <meta name="description" content="Système solaire en trois dimensions, planétarium local, cycles du Soleil et de la Lune, éclipses et agenda céleste. Fonctionne hors-ligne.">
+  <meta name="theme-color" content="#05070e">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Céleste">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icone.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icone-192.png">
+
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/vues.css">
+</head>
+<body>
+  <div id="application">
+    <header class="entete">
+      <button class="entete-lieu" id="bouton-lieu" type="button" aria-label="Changer de lieu d’observation">
+        <span class="entete-lieu-nom">Chargement…</span>
+        <span class="entete-lieu-detail"></span>
+      </button>
+
+      <button class="entete-horloge" id="bouton-horloge" type="button" aria-label="Régler le temps">
+        <span class="entete-heure">--:--</span>
+        <span class="entete-date"></span>
+      </button>
+
+      <button class="bouton-icone" id="bouton-menu" type="button" aria-label="Menu">☰</button>
+    </header>
+
+    <main class="vue" id="vue" tabindex="-1"></main>
+
+    <div class="barre-temps" id="barre-temps" data-ouverte="non"></div>
+
+    <nav class="navigation" id="navigation" aria-label="Sections principales"></nav>
+  </div>
+
+  <div class="panneau-fond" id="panneau-fond" data-ouvert="non" hidden></div>
+  <aside class="panneau" id="panneau" data-ouvert="non" role="dialog" aria-modal="true" hidden>
+    <div class="panneau-poignee"></div>
+    <header class="panneau-tete">
+      <h2 id="panneau-titre"></h2>
+      <button class="bouton-icone" id="panneau-fermer" type="button" aria-label="Fermer">✕</button>
+    </header>
+    <div class="panneau-corps" id="panneau-corps"></div>
+  </aside>
+
+  <noscript>
+    <p style="padding:24px;color:#e9edf7">
+      Céleste calcule les positions des astres dans votre navigateur :
+      JavaScript est nécessaire pour l’utiliser.
+    </p>
+  </noscript>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

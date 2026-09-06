@@ -1,0 +1,408 @@
+/*
+ * Composants partagés : cartes, lignes de données, statistiques, pastilles,
+ * tableaux, listes et contrôles de formulaire.
+ */
+
+/* --------------------------------------------------------------- cartes */
+
+.carte {
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.carte--accent {
+  background: linear-gradient(160deg,
+    color-mix(in srgb, var(--accent) 10%, var(--carte)), var(--carte) 60%);
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--trait));
+}
+
+.carte--plate { background: none; border: 0; padding: 0; }
+
+.carte-tete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.carte-titre { font-size: 15px; }
+
+.carte-soustitre {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--texte-faible);
+}
+
+.entete-section { margin: 8px 2px 0; }
+.entete-section h2 { font-size: 17px; }
+.entete-section p { margin: 3px 0 0; font-size: 12.5px; color: var(--texte-faible); }
+
+/* ------------------------------------------------------ lignes de données */
+
+.lignes { display: flex; flex-direction: column; }
+
+.ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--trait);
+}
+
+.lignes .ligne:last-child { border-bottom: 0; }
+.ligne:first-child { padding-top: 0; }
+
+.ligne-etiquette {
+  color: var(--texte-doux);
+  font-size: 13.5px;
+  flex: 0 1 auto;
+}
+
+.ligne-valeur {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  min-width: 0;
+}
+
+.ligne-precision {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--texte-faible);
+}
+
+/* ---------------------------------------------------------- statistiques */
+
+.grille-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.stat {
+  background: var(--carte-haute);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-petit);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat--accent { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.stat--azur { border-color: color-mix(in srgb, var(--azur) 40%, transparent); }
+.stat--chaud { border-color: color-mix(in srgb, var(--chaud) 40%, transparent); }
+
+.stat-valeur {
+  font-size: 19px;
+  /* Les valeurs longues (« 13 h 08 min ») ne doivent pas étirer la tuile. */
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.stat-unite {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--texte-doux);
+  margin-left: 3px;
+}
+
+.stat-etiquette {
+  font-size: 11.5px;
+  color: var(--texte-doux);
+  line-height: 1.25;
+}
+
+.stat-precision { font-size: 10.5px; color: var(--texte-faible); }
+
+/* ------------------------------------------------------------ pastilles */
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: var(--carte-haute);
+  border: 1px solid var(--trait);
+  color: var(--texte-doux);
+}
+
+.pastille--accent { background: var(--accent-sourd); border-color: transparent; color: var(--accent); }
+.pastille--azur { background: var(--azur-sourd); border-color: transparent; color: var(--azur); }
+.pastille--vif { background: color-mix(in srgb, var(--vif) 16%, transparent); border-color: transparent; color: var(--vif); }
+.pastille--alerte { background: color-mix(in srgb, var(--alerte) 16%, transparent); border-color: transparent; color: var(--alerte); }
+.pastille--froid { background: color-mix(in srgb, var(--froid) 16%, transparent); border-color: transparent; color: var(--froid); }
+
+/* -------------------------------------------------------------- boutons */
+
+.bouton {
+  padding: 9px 14px;
+  border-radius: var(--rayon-petit);
+  border: 1px solid var(--trait);
+  background: var(--carte-haute);
+  color: var(--texte);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.bouton:active { background: var(--trait); }
+.bouton:disabled { opacity: 0.45; cursor: default; }
+
+.bouton--accent {
+  background: var(--accent);
+  border-color: transparent;
+  color: #1a1206;
+  font-weight: 600;
+}
+
+.bouton--discret { background: none; border-color: transparent; color: var(--texte-doux); }
+
+.barre-boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ------------------------------------------------------------- segments */
+
+.segments {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--carte-haute);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-petit);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.segments::-webkit-scrollbar { display: none; }
+
+.segment {
+  flex: 1 0 auto;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--texte-doux);
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.segment--actif {
+  background: var(--accent-sourd);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- jauges */
+
+.jauge {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--carte-haute);
+  overflow: hidden;
+}
+
+.jauge-remplissage { height: 100%; border-radius: 3px; }
+.jauge-remplissage--accent { background: var(--accent); }
+.jauge-remplissage--azur { background: var(--azur); }
+.jauge-remplissage--vif { background: var(--vif); }
+
+/* --------------------------------------------------------------- listes */
+
+.liste { display: flex; flex-direction: column; }
+
+.element-liste {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 2px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--trait);
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.liste .element-liste:last-child { border-bottom: 0; }
+.element-liste:active { background: var(--carte-haute); }
+
+.element-avant {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--carte-haute);
+  font-size: 16px;
+}
+
+.element-corps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.element-titre { font-size: 14px; font-weight: 500; }
+.element-soustitre { font-size: 12px; color: var(--texte-faible); }
+
+.element-apres {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  color: var(--texte-doux);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------- tableaux */
+
+.tableau-defilant { overflow-x: auto; margin: 0 -14px; padding: 0 14px; }
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tableau th {
+  text-align: left;
+  padding: 6px 10px 6px 0;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--texte-faible);
+  border-bottom: 1px solid var(--trait-fort);
+  white-space: nowrap;
+}
+
+.tableau td {
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid var(--trait);
+  white-space: nowrap;
+}
+
+.tableau tr:last-child td { border-bottom: 0; }
+
+/* --------------------------------------------------------------- textes */
+
+.texte { font-size: 14px; color: var(--texte-doux); line-height: 1.62; }
+.texte strong { color: var(--texte); font-weight: 600; }
+
+.note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--rayon-petit);
+  font-size: 12.5px;
+  line-height: 1.5;
+  background: var(--carte-haute);
+  color: var(--texte-doux);
+  border-left: 2px solid var(--trait-fort);
+}
+
+.note--accent { border-left-color: var(--accent); }
+.note--alerte { border-left-color: var(--alerte); color: var(--texte); }
+
+/* ------------------------------------------------------------ dépliants */
+
+.depliant {
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-petit);
+  background: var(--carte-haute);
+  overflow: hidden;
+}
+
+.depliant summary {
+  padding: 11px 13px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.depliant summary::-webkit-details-marker { display: none; }
+.depliant summary::after { content: '▾'; color: var(--texte-faible); transition: transform 0.2s ease; }
+.depliant[open] summary::after { transform: rotate(180deg); }
+.depliant-corps { padding: 0 13px 13px; }
+
+/* ---------------------------------------------------------- formulaires */
+
+.champ { display: flex; flex-direction: column; gap: 5px; }
+
+.champ-etiquette { font-size: 12px; color: var(--texte-doux); }
+
+.champ input, .champ select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--carte-haute);
+  border: 1px solid var(--trait);
+  border-radius: var(--rayon-petit);
+  font-size: 14px;
+}
+
+.champ input:focus, .champ select:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.bascule {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--trait);
+  cursor: pointer;
+}
+
+.bascule:last-child { border-bottom: 0; }
+.bascule-texte { display: flex; flex-direction: column; gap: 1px; }
+.bascule-titre { font-size: 14px; }
+.bascule-detail { font-size: 11.5px; color: var(--texte-faible); }
+
+.bascule input { appearance: none; margin: 0; width: 44px; height: 26px; flex: 0 0 auto;
+  background: var(--carte-haute); border: 1px solid var(--trait); border-radius: 999px;
+  position: relative; cursor: pointer; transition: background 0.18s ease; }
+
+.bascule input::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--texte-faible);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.bascule input:checked { background: var(--accent-sourd); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.bascule input:checked::after { transform: translateX(18px); background: var(--accent); }
+
+/* ------------------------------------------------------------- diagrammes */
+
+.figure { width: 100%; display: block; overflow: visible; }
+.figure-legende { font-size: 11.5px; color: var(--texte-faible); margin-top: 6px; }
+
+/* Éléments SVG récurrents des graphiques. */
+.axe { stroke: var(--trait-fort); stroke-width: 1; }
+.grille-fine { stroke: var(--trait); stroke-width: 1; }
+.axe-texte { fill: var(--texte-faible); font-size: 10px; }
+.courbe { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

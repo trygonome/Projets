@@ -1,0 +1,18 @@
+{
+  "name": "celeste",
+  "version": "1.0.0",
+  "description": "Système solaire et éphémérides — application web installable, calculée sur l'appareil.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test tests/",
+    "build:data": "node tools/build-data.mjs",
+    "build:icons": "node tools/build-icons.mjs",
+    "check": "node tools/verifier.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.1"
+  }
+}

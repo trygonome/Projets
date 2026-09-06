@@ -1,0 +1,268 @@
+/* Styles propres aux vues : blocs composés, figures et surfaces plein écran. */
+
+/* ------------------------------------------------------------ Aujourd'hui */
+
+.bloc-lune {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.figure--lune {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+}
+.bloc-lune-donnees { flex: 1; min-width: 0; }
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 8px;
+}
+
+.legende-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  color: var(--texte-faible);
+}
+
+.legende-item i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.point-corps {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.grille-champs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.figure--frise {
+  width: 100%;
+  height: 46px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------- vues immersives */
+
+.surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.surface-outils {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.surface-outils > * { pointer-events: auto; }
+
+.puce-outil {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--trait);
+  background: color-mix(in srgb, var(--carte) 86%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--texte-doux);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.puce-outil[data-actif='oui'] {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--carte));
+}
+
+.info-flottante {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: calc(var(--hauteur-nav) + env(safe-area-inset-bottom) + 12px);
+  z-index: 5;
+  padding: 11px 13px;
+  border-radius: var(--rayon);
+  border: 1px solid var(--trait);
+  background: color-mix(in srgb, var(--carte) 92%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--ombre);
+}
+
+.info-flottante-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.info-flottante-detail {
+  font-size: 12px;
+  color: var(--texte-doux);
+  line-height: 1.45;
+}
+
+.info-flottante-fermer {
+  background: none;
+  border: 0;
+  color: var(--texte-faible);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+/* --------------------------------------------------------------- Cycles */
+
+.calendrier-lunaire {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendrier-jour {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--carte-haute);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.calendrier-jour[data-aujourdhui='oui'] {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.calendrier-jour[data-hors-mois='oui'] { opacity: 0.32; }
+.calendrier-jour-numero { font-size: 10px; color: var(--texte-faible); }
+.calendrier-entete {
+  font-size: 10px;
+  text-align: center;
+  color: var(--texte-faible);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---------------------------------------------------------------- Corps */
+
+.fiche-entete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fiche-globe {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset -10px -8px 22px rgba(0, 0, 0, 0.6),
+    0 0 24px color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.fiche-titre { font-size: 21px; font-weight: 650; letter-spacing: -0.02em; }
+.fiche-genre { font-size: 12.5px; color: var(--texte-faible); }
+
+.grille-corps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 8px;
+}
+
+.vignette-corps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 8px;
+  border-radius: var(--rayon-petit);
+  background: var(--carte);
+  border: 1px solid var(--trait);
+  cursor: pointer;
+  color: inherit;
+}
+
+.vignette-corps:active { background: var(--carte-haute); }
+
+.vignette-globe {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: inset -6px -5px 14px rgba(0, 0, 0, 0.55);
+}
+
+.vignette-nom { font-size: 13px; font-weight: 500; }
+.vignette-detail { font-size: 10.5px; color: var(--texte-faible); text-align: center; }
+
+/* --------------------------------------------------------------- Savoir */
+
+.article { line-height: 1.68; }
+.article h3 { font-size: 15px; margin: 18px 0 6px; color: var(--texte); }
+.article h3:first-child { margin-top: 0; }
+.article p { font-size: 14px; color: var(--texte-doux); margin-bottom: 0.85em; }
+.article ul { margin: 0 0 0.9em; padding-left: 18px; font-size: 14px; color: var(--texte-doux); }
+.article li { margin-bottom: 5px; }
+.article strong { color: var(--texte); }
+.article em { color: var(--accent); font-style: normal; }
+
+.formule {
+  display: block;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: var(--rayon-petit);
+  background: var(--carte-haute);
+  border-left: 2px solid var(--azur);
+  font-family: var(--police-chiffres);
+  font-size: 13px;
+  color: var(--texte);
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------- Agenda */
+
+.agenda-jour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  flex: 0 0 auto;
+  padding: 5px 0;
+  border-radius: var(--rayon-petit);
+  background: var(--carte-haute);
+}
+
+.agenda-jour-numero { font-size: 17px; font-weight: 600; line-height: 1; }
+.agenda-jour-mois { font-size: 9.5px; text-transform: uppercase; color: var(--texte-faible); letter-spacing: 0.05em; }
