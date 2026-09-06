@@ -111,8 +111,9 @@ let timeBarVisible = false;
 function buildTimeBar() {
   clear(dom.timeBar);
   const index = TIME_RATES.findIndex((entry) => entry.rate === timeRate());
+  const rateLabel = TIME_RATES[index]?.label ?? `× ${timeRate()}`;
   const label = el('span', { class: 'barre-temps-vitesse' },
-    isLive() ? 'temps réel' : (TIME_RATES[index]?.label ?? `× ${timeRate()}`));
+    isLive() ? 'temps réel' : `${rateLabel} · simulé`);
 
   dom.timeBar.append(
     button('⏮', () => shiftTime(-1), { variant: 'discret', title: 'Un jour plus tôt' }),

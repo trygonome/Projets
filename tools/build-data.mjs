@@ -170,14 +170,21 @@ const DSO_TYPE_FR = {
 };
 
 const DSO_NAMES_FR = {
-  M1: 'Nébuleuse du Crabe', M8: 'Nébuleuse de la Lagune', M13: 'Grand amas d’Hercule',
-  M16: 'Nébuleuse de l’Aigle', M17: 'Nébuleuse Oméga', M20: 'Nébuleuse Trifide',
-  M27: 'Nébuleuse de l’Haltère', M31: 'Galaxie d’Andromède', M33: 'Galaxie du Triangle',
-  M42: 'Nébuleuse d’Orion', M43: 'Nébuleuse de De Mairan', M44: 'Amas de la Crèche',
-  M45: 'Les Pléiades', M51: 'Galaxie du Tourbillon', M57: 'Nébuleuse de la Lyre',
-  M63: 'Galaxie du Tournesol', M64: 'Galaxie de l’Œil noir', M76: 'Petite Nébuleuse de l’Haltère',
-  M81: 'Galaxie de Bode', M82: 'Galaxie du Cigare', M87: 'Galaxie Vierge A',
-  M97: 'Nébuleuse du Hibou', M101: 'Galaxie du Moulinet', M104: 'Galaxie du Sombrero',
+  M1: 'Nébuleuse du Crabe', M6: 'Amas du Papillon', M7: 'Amas de Ptolémée',
+  M8: 'Nébuleuse de la Lagune', M11: 'Amas du Canard sauvage',
+  M13: 'Grand amas d’Hercule', M16: 'Nébuleuse de l’Aigle',
+  M17: 'Nébuleuse Oméga', M20: 'Nébuleuse Trifide',
+  M22: 'Grand amas du Sagittaire', M24: 'Nuage stellaire du Sagittaire',
+  M27: 'Nébuleuse de l’Haltère', M31: 'Galaxie d’Andromède',
+  M33: 'Galaxie du Triangle', M42: 'Nébuleuse d’Orion',
+  M43: 'Nébuleuse de De Mairan', M44: 'Amas de la Crèche', M45: 'Les Pléiades',
+  M51: 'Galaxie du Tourbillon', M57: 'Nébuleuse de la Lyre',
+  M63: 'Galaxie du Tournesol', M64: 'Galaxie de l’Œil noir',
+  M76: 'Petite Nébuleuse de l’Haltère', M78: 'Nébuleuse de Casper',
+  M81: 'Galaxie de Bode', M82: 'Galaxie du Cigare', M83: 'Galaxie australe du Moulinet',
+  M87: 'Galaxie Vierge A', M97: 'Nébuleuse du Hibou',
+  M101: 'Galaxie du Moulinet', M104: 'Galaxie du Sombrero',
+  M110: 'Compagne d’Andromède',
 };
 
 async function buildDeepSky() {
@@ -188,7 +195,9 @@ async function buildDeepSky() {
     return {
       id: p.name,
       ngc: p.desig || '',
-      name: DSO_NAMES_FR[p.name] || p.alt || '',
+      // Le catalogue source ne propose que des noms anglais : à défaut d'un
+      // nom français, on s'en tient à la désignation Messier.
+      name: DSO_NAMES_FR[p.name] ?? '',
       kind: DSO_TYPE_FR[p.type] || p.type || '',
       mag: Number.isFinite(p.mag) ? round(p.mag, 1) : null,
       size: p.dim || '',
