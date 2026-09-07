@@ -80,8 +80,16 @@ npm run build:android-icons
 
 ### Signature
 
-Sans configuration, la variante `release` est signée avec la clé de débogage
-d'Android : installable, mais impropre à une distribution.
+Android n'installe que des APK signés. Sans `android/keystore.properties`, la
+variante `release` se rabat sur la clé de débogage : l'APK reste installable
+pour un usage personnel, mais il est impropre à une distribution — cette clé
+est publique et identique pour tout le monde.
+
+**Conséquence à connaître** : Android refuse d'installer une mise à jour signée
+par une clé différente de celle de la version en place. Un APK construit par
+l'intégration continue sans secrets, donc signé en débogage, ne s'installera
+pas par-dessus un APK signé avec votre clé — il faudra désinstaller d'abord.
+Choisissez une clé et tenez-vous-y.
 
 Pour signer avec votre propre clé, créez-en une puis décrivez-la dans
 `android/keystore.properties` — fichier ignoré par git, comme la clé elle-même :

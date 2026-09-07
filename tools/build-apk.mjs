@@ -8,7 +8,7 @@
  * régénérer le service worker figerait une version périmée dans l'APK.
  */
 import { execFile } from 'node:child_process';
-import { stat } from 'node:fs/promises';
+import { readdir, stat } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -40,9 +40,27 @@ await etape(`Construction ${variante}`, 'gradle', ['--no-daemon', tache], {
   env: { ...process.env, ANDROID_HOME: process.env.ANDROID_HOME ?? '/opt/android-sdk' },
 });
 
-const nom = variante === 'debug' ? 'app-debug.apk' : 'app-release.apk';
-const chemin = join(ROOT, 'android', 'app', 'build', 'outputs', 'apk', variante, nom);
-const info = await stat(chemin);
-process.stderr.write(
-  `\n✓ ${chemin.replace(`${ROOT}/`, '')} — ${(info.size / 1024 / 1024).toFixed(2)} Mo\n`,
-);
+// Le nom du fichier dépend de la signature : « app-release.apk » quand une
+// clé est configurée, « app-release-unsigned.apk » sinon. On lit donc le
+// dossier de sortie plutôt que de deviner.
+const sortie = join(ROOT, 'android', 'app', 'build', 'outputs', 'apk', variante);
+const produits = (await readdir(sortie)).filter((nom) => nom.endsWith('.apk'));
+
+if (!produits.length) {
+  process.stderr.write(`\nAucun APK produit dans ${sortie.replace(`${ROOT}/`, '')}.\n`);
+  process.exit(1);
+}
+
+for (const nom of produits) {
+  const info = await stat(join(sortie, nom));
+  process.stderr.write(
+    `\n✓ ${join(sortie, nom).replace(`${ROOT}/`, '')} — `
+    + `${(info.size / 1024 / 1024).toFixed(2)} Mo\n`,
+  );
+  if (nom.includes('unsigned')) {
+    process.stderr.write(
+      '  ⚠ APK non signé : il ne s’installera pas. Vérifiez android/keystore.properties.\n',
+    );
+    process.exit(1);
+  }
+}

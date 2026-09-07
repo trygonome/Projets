@@ -54,6 +54,13 @@ android {
             shrinkResources false
             if (rootProject.file('keystore.properties').exists()) {
                 signingConfig signingConfigs.release
+            } else {
+                // Sans clé déclarée, Gradle produirait un APK *non signé*, que
+                // ni Android ni le script de construction ne sauraient quoi
+                // faire. On se rabat sur la clé de débogage : l'APK reste
+                // installable pour un usage personnel, ce qu'un APK non signé
+                // n'est pas. Seule la distribution demande une vraie clé.
+                signingConfig signingConfigs.debug
             }
         }
     }
