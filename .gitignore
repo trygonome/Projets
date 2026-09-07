@@ -10,10 +10,13 @@ android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
-# La clé de signature n'appartient qu'à qui publie
+# La clé de signature n'appartient qu'à qui publie, et la note qui
+# l'accompagne en porte le mot de passe : ni l'une ni l'autre n'ont leur
+# place dans l'historique.
 android/keystore.properties
 *.keystore
 *.jks
+CLE-DE-SIGNATURE.txt
 
 # Les APK sont produits par tools/build-apk.mjs et par le workflow ; ils n'ont
 # pas à alourdir l'historique.
