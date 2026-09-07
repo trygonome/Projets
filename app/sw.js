@@ -8,10 +8,10 @@
  *
  * Fichier produit par tools/build-sw.mjs — ne pas modifier à la main.
  */
-const VERSION = '959f01bd7483';
+const VERSION = '393b799e67a5';
 const CACHE = `celeste-${VERSION}`;
 
-/** 45 fichiers, 1.94 Mo au total. */
+/** 46 fichiers, 1.94 Mo au total. */
 const RESSOURCES = [
   "./",
   "data/constellations.json",
@@ -29,6 +29,7 @@ const RESSOURCES = [
   "js/core/events.js",
   "js/core/format.js",
   "js/core/geo.js",
+  "js/core/hebergement.js",
   "js/core/state.js",
   "js/core/time.js",
   "js/data/bodies.js",

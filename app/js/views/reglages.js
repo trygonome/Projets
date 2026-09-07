@@ -12,6 +12,7 @@ import {
 import { deviceTimeZone, timeZoneLabel, formatLatitude, formatLongitude, formatNumber } from '../core/format.js';
 import { openPlacePanel } from './lieu.js';
 import { PLACES } from '../data/places.js';
+import { hebergement } from '../core/hebergement.js';
 
 /** Fuseaux proposés en tête de liste, les plus utiles au public visé. */
 const COMMON_ZONES = [
@@ -120,44 +121,63 @@ export function mount(container, { openPanel }) {
   }
 
   function renderInstall() {
-    const standalone = window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
+    const contexte = hebergement();
+
+    // Dans l'APK, tout est déjà sur l'appareil : proposer une installation
+    // n'aurait aucun sens, et la mise à jour passe par le fichier.
+    if (contexte === 'apk') {
+      return card({ title: 'Application installée' },
+        notice('Céleste tourne depuis l’application Android : les catalogues, '
+          + 'le moteur d’éphémérides et les cartes sont dans l’appareil. Aucune '
+          + 'connexion n’est nécessaire, jamais.', 'accent'),
+        el('p', { class: 'texte' },
+          'Pour passer à une version plus récente, installez le nouveau fichier '
+          + 'APK par-dessus celui-ci : vos réglages et votre lieu sont conservés.'),
+        renderCachePurge());
+    }
+
+    if (contexte === 'installe') {
+      return card({ title: 'Application installée' },
+        notice('Céleste est installée sur l’écran d’accueil : elle s’ouvre en '
+          + 'plein écran et fonctionne sans connexion.', 'accent'),
+        renderCachePurge());
+    }
 
     return card({ title: 'Installer sur l’appareil' },
-      standalone
-        ? notice('Céleste est déjà installée : elle s’ouvre en plein écran et '
-          + 'fonctionne sans connexion.', 'accent')
-        : el('div', {},
-          el('p', { class: 'texte' },
-            'Installée, l’application occupe tout l’écran, se lance depuis l’écran '
-            + 'd’accueil et fonctionne sans réseau : tous les calculs sont faits sur '
-            + 'l’appareil.'),
-          installEvent
-            ? el('div', { class: 'barre-boutons' },
-              button('Installer maintenant', async () => {
-                installEvent.prompt();
-                await installEvent.userChoice;
-                installEvent = null;
-                render();
-              }, { variant: 'accent' }))
-            : notice('Sur Android : menu du navigateur, puis « Installer l’application » '
-              + 'ou « Ajouter à l’écran d’accueil ». Sur iPhone : bouton Partager, '
-              + 'puis « Sur l’écran d’accueil ».')),
-      disclosure('Données hors-ligne',
-        el('p', { class: 'texte' },
-          'Le catalogue d’étoiles, les figures des constellations, les contours des '
-          + 'côtes et le moteur d’éphémérides sont mis en cache dès la première '
-          + 'visite. Aucune requête n’est faite ensuite.'),
-        el('div', { class: 'barre-boutons' },
-          button('Vider le cache et recharger', async () => {
-            if ('caches' in window) {
-              const keys = await caches.keys();
-              await Promise.all(keys.map((key) => caches.delete(key)));
-            }
-            const registrations = await navigator.serviceWorker?.getRegistrations?.() ?? [];
-            await Promise.all(registrations.map((registration) => registration.unregister()));
-            location.reload();
-          }))));
+      el('p', { class: 'texte' },
+        'Installée, l’application occupe tout l’écran, se lance depuis l’écran '
+        + 'd’accueil et fonctionne sans réseau : tous les calculs sont faits sur '
+        + 'l’appareil.'),
+      installEvent
+        ? el('div', { class: 'barre-boutons' },
+          button('Installer maintenant', async () => {
+            installEvent.prompt();
+            await installEvent.userChoice;
+            installEvent = null;
+            render();
+          }, { variant: 'accent' }))
+        : notice('Sur Android : menu du navigateur, puis « Installer l’application » '
+          + 'ou « Ajouter à l’écran d’accueil ». Sur iPhone : bouton Partager, '
+          + 'puis « Sur l’écran d’accueil ».'),
+      renderCachePurge());
+  }
+
+  function renderCachePurge() {
+    return disclosure('Données hors-ligne',
+      el('p', { class: 'texte' },
+        'Le catalogue d’étoiles, les figures des constellations, les contours des '
+        + 'côtes et le moteur d’éphémérides sont mis en cache dès la première '
+        + 'visite. Aucune requête n’est faite ensuite.'),
+      el('div', { class: 'barre-boutons' },
+        button('Vider le cache et recharger', async () => {
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map((key) => caches.delete(key)));
+          }
+          const registrations = await navigator.serviceWorker?.getRegistrations?.() ?? [];
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+          location.reload();
+        })));
   }
 
   function renderAbout() {

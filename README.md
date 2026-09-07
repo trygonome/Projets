@@ -55,21 +55,18 @@ solaire, l'observation, et un glossaire.
 
 ## Installer sur Android
 
-L'application est une application web installable. Sur le téléphone :
+**Par l'APK** — un fichier de 1,7 mégaoctet, qui n'a jamais besoin du réseau,
+même au premier lancement. Le copier sur le téléphone, l'ouvrir, autoriser
+l'installation depuis cette source.
 
-1. ouvrir l'adresse de publication dans Chrome ;
-2. menu ⋮, puis **Installer l'application** (ou **Ajouter à l'écran d'accueil**) ;
-3. la lancer depuis l'écran d'accueil : elle occupe tout l'écran et fonctionne
-   sans connexion.
+**Par le navigateur** — ouvrir l'adresse de publication dans Chrome, menu ⋮,
+puis **Installer l'application**. Le premier lancement met en cache environ deux
+mégaoctets — catalogue d'étoiles, figures des constellations, contours des
+côtes, moteur d'éphémérides. Ensuite, plus rien n'est téléchargé. Sur iPhone, le
+chemin passe par le bouton Partager puis **Sur l'écran d'accueil**.
 
-Sur iPhone, le chemin passe par le bouton Partager puis **Sur l'écran d'accueil**.
-
-Pour en faire une véritable APK — distribution par fichier ou publication sur le
-Play Store — voir [docs/android.md](docs/android.md).
-
-Le premier lancement met en cache environ deux mégaoctets — catalogue d'étoiles,
-figures des constellations, contours des côtes, moteur d'éphémérides. Ensuite,
-plus rien n'est téléchargé.
+Les deux donnent la même application. [docs/android.md](docs/android.md) détaille
+l'installation, la construction de l'APK et sa signature.
 
 Un réglage **vision nocturne** bascule l'interface en rouge profond : sur le
 terrain, il préserve l'adaptation de l'œil à l'obscurité.
@@ -90,6 +87,15 @@ npm run build:data # régénère les catalogues depuis les sources publiques
 npm run build:sw   # régénère le service worker et sa liste de pré-cache
 npm run build:icons# régénère les icônes PNG depuis l'icône vectorielle
 npm run parcours   # parcourt toutes les vues dans un navigateur et relève les erreurs
+npm run build:apk  # construit l'APK Android (JDK 17+ et SDK Android requis)
+```
+
+Le serveur accepte un préfixe de montage, ce qui reproduit les conditions de
+l'APK — où l'application est servie sous `/assets/celeste/` — et vérifie que
+tous ses chemins sont bien relatifs :
+
+```sh
+PREFIXE=/assets/celeste npm start
 ```
 
 Après toute modification de `app/`, relancer `npm run build:sw` : la version du
@@ -107,7 +113,10 @@ app/                 le site, servi tel quel
     views/           une vue par onglet, chargée à la demande
   data/              catalogues JSON générés
   vendor/            Astronomy Engine et three.js, vendorisés
-tools/               génération des données, des icônes, du service worker
+android/             coquille Android : une activité, une dépendance
+  app/src/main/java/ MainActivity, qui héberge l'application dans un WebView
+  app/src/main/res/  icônes, thème sombre, libellés
+tools/               génération des données, des icônes, du service worker, de l'APK
 tests/               tests du moteur et des données
 ```
 

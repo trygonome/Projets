@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mêmes valeurs que les variables CSS de l'application. -->
+    <color name="fond">#FF05070E</color>
+    <color name="accent">#FFFFD27D</color>
+</resources>

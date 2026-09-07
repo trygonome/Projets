@@ -1,0 +1,82 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'net.celeste.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'net.celeste.app'
+        // WebViewAssetLoader demande l'API 21 ; on part d'Android 7, dont le
+        // WebView se met à jour indépendamment du système et gère WebGL 2.
+        minSdk 24
+        targetSdk 35
+        versionCode 10000
+        versionName '1.0.0'
+        resourceConfigurations += ['fr']
+    }
+
+    // Les assets sont la copie de app/, déposée par tools/sync-android.mjs.
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+        }
+    }
+
+    signingConfigs {
+        release {
+            // Signature de publication facultative : elle n'est activée que si
+            // android/keystore.properties existe. Ce fichier n'est jamais
+            // commité — la clé de signature appartient à qui publie.
+            def proprietes = rootProject.file('keystore.properties')
+            if (proprietes.exists()) {
+                def config = new Properties()
+                proprietes.withInputStream { config.load(it) }
+                storeFile rootProject.file(config['storeFile'])
+                storePassword config['storePassword']
+                keyAlias config['keyAlias']
+                keyPassword config['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
+        release {
+            // La coquille ne contient qu'une classe : il n'y a rien à réduire,
+            // et R8 n'apporterait qu'un risque sur un binaire que l'on ne peut
+            // pas relancer avant publication.
+            minifyEnabled false
+            shrinkResources false
+            if (rootProject.file('keystore.properties').exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        // Les fichiers de l'application web sont déjà compacts et servis tels
+        // quels ; les compresser à nouveau n'apporte rien au temps de démarrage.
+        jniLibs.useLegacyPackaging false
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    // Seule dépendance de la coquille : WebViewAssetLoader, qui sert les
+    // assets sous une origine « https » véritable. Tout le reste tient dans
+    // les API du système, ce qui garde l'APK petit et le code lisible.
+    implementation 'androidx.webkit:webkit:1.12.1'
+}

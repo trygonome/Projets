@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Thème sombre, sans barre d'action, dessinant bord à bord. Les barres
+      système sont transparentes pour que l'application occupe tout l'écran ;
+      ses marges viennent des variables CSS env(safe-area-inset-*).
+    -->
+    <style name="Theme.Celeste" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/fond</item>
+        <item name="android:colorBackground">@color/fond</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+</resources>

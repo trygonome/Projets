@@ -2,3 +2,19 @@ node_modules/
 package-lock.json
 .DS_Store
 *.log
+
+# Copie de app/ régénérée par tools/sync-android.mjs
+android/app/src/main/assets/
+# Sorties et caches de la construction Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+# La clé de signature n'appartient qu'à qui publie
+android/keystore.properties
+*.keystore
+*.jks
+
+# Les APK sont produits par tools/build-apk.mjs et par le workflow ; ils n'ont
+# pas à alourdir l'historique.
+*.apk

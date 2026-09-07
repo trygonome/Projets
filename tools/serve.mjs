@@ -14,6 +14,15 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'app');
 const PORT = Number(process.env.PORT ?? 8080);
 
+/**
+ * Préfixe de montage facultatif. Dans l'APK, l'application est servie sous
+ * « /assets/celeste/ » et non à la racine : pouvoir reproduire ce montage ici
+ * permet de vérifier que tous ses chemins sont bien relatifs.
+ *
+ *   PREFIXE=/assets/celeste npm start
+ */
+const PREFIXE = (process.env.PREFIXE ?? '').replace(/\/$/, '');
+
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -30,6 +39,14 @@ const TYPES = {
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host}`);
   let path = decodeURIComponent(url.pathname);
+  if (PREFIXE) {
+    if (!path.startsWith(`${PREFIXE}/`) && path !== PREFIXE) {
+      response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      response.end('Hors du préfixe servi');
+      return;
+    }
+    path = path.slice(PREFIXE.length) || '/';
+  }
   if (path.endsWith('/')) path += 'index.html';
 
   // Empêche toute remontée hors du dossier servi.
@@ -55,5 +72,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(PORT, () => {
-  process.stdout.write(`Céleste servi sur http://localhost:${PORT}\n`);
+  process.stdout.write(`Céleste servi sur http://localhost:${PORT}${PREFIXE}/\n`);
 });

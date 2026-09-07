@@ -12,7 +12,9 @@
     "build:icons": "node tools/build-icons.mjs",
     "build:sw": "node tools/build-sw.mjs",
     "check": "node tools/verifier.mjs",
-    "parcours": "node tools/parcours.mjs"
+    "parcours": "node tools/parcours.mjs",
+    "build:apk": "node tools/build-apk.mjs",
+    "build:android-icons": "node tools/build-android-icons.mjs"
   },
   "devDependencies": {
     "playwright": "^1.49.1"
